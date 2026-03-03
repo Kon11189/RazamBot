@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>System Terminal Access</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            overflow: hidden; /* Чтобы не было полос прокрутки при заполнении */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #matrix-terminal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            padding: 10px;
+            font-size: 12px;
+            line-height: 1.1;
+            word-break: break-all;
+            opacity: 0.8;
+            overflow: hidden;
+        }
+
+        #balance-screen {
+            display: none; /* Скрыт до конца загрузки */
+            z-index: 100;
+            text-align: center;
+            background: rgba(0, 10, 0, 0.9);
+            padding: 50px;
+            border: 3px solid #00ff00;
+            box-shadow: 0 0 30px #00ff00;
+        }
+
+        .lcd-digits {
+            font-size: 80px;
+            font-weight: bold;
+            color: #33ff33;
+            text-shadow: 0 0 15px #33ff33;
+            font-family: 'Courier New', monospace;
+        }
+
+        .label {
+            font-size: 20px;
+            margin-bottom: 15px;
+            letter-spacing: 3px;
+            opacity: 0.8;
+        }
+
+        /* Эффект старого монитора */
+        .crt-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="crt-overlay"></div>
+<div id="matrix-terminal"></div>
+
+<div id="balance-screen">
+    <div class="label">ACCOUNT BALANCE: ACTIVE</div>
+    <div id="balance" class="lcd-digits">0.0000$</div>
+    <div style="margin-top: 10px; font-size: 12px;">RATE: 1.00 USD / MIN</div>
+</div>
+
+<script>
+    const term = document.getElementById('matrix-terminal');
+    const screen = document.getElementById('balance-screen');
+    const balEl = document.getElementById('balance');
+
+    // Генератор случайного системного мусора
+    const chars = "01010101 ABCDEFGHIJKLMNOPQRSTUVWXYZ []{} --dir /root --force --access-granted 0x88234";
+    
+    let startTime = Date.now();
+    let balance = 0.0000;
+
+    // 1. Быстрая печать логов (10 секунд)
+    function fastBoot() {
+        let elapsed = Date.now() - startTime;
+
+        if (elapsed < 10000) { // 10 секунд
+            // Добавляем сразу много строк для эффекта скорости
+            for(let i = 0; i < 5; i++) {
+                let line = document.createElement('div');
+                line.textContent = `[${(Math.random() * 100).toFixed(4)}] ` + 
+                                   Array(10).fill(0).map(() => chars[Math.floor(Math.random() * chars.length)]).join('') + 
+                                   " EXEC_PROC_ID_" + Math.floor(Math.random() * 9999);
+                term.appendChild(line);
+            }
+
+            // Автопрокрутка вниз
+            window.scrollTo(0, document.body.scrollHeight);
+            
+            // Если строк слишком много, удаляем старые, чтобы не тормозило
+            if (term.childNodes.length > 100) {
+                term.removeChild(term.firstChild);
+            }
+
+            requestAnimationFrame(fastBoot);
+        } else {
+            // Конец загрузки
+            term.style.display = 'none';
+            screen.style.display = 'block';
+            startEarning();
+        }
+    }
+
+    // 2. Логика начисления денег
+    function startEarning() {
+        const perSecond = 1 / 60; // 1 доллар в минуту
+        const updateRate = 50; // обновление каждые 50мс
+
+        setInterval(() => {
+            balance += perSecond / (1000 / updateRate);
+            balEl.textContent = balance.toFixed(4) + "$";
+        }, updateRate);
+    }
+
+    // Поехали!
+    fastBoot();
+</script>
+
+</body>
+</html>
