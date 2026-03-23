@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Реферат: Методы сжатия с потерями (JPEG, JPEG 2000)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #e0eaf4 0%, #cfdef3 100%);
+            font-family: 'Segoe UI', 'Roboto', 'Times New Roman', Georgia, serif;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Контейнер для страниц (как книга) */
+        .pages-container {
+            max-width: 1100px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Стиль каждой страницы — имитация листа А4 */
+        .page {
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.05);
+            padding: 2.8rem 2.5rem;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            position: relative;
+            backdrop-filter: blur(0px);
+            border: 1px solid rgba(255,255,240,0.6);
+        }
+
+        .page:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 28px 40px -15px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Кнопка копирования — элегантная, плавная */
+        .copy-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 2rem;
+            background: rgba(52, 84, 120, 0.85);
+            backdrop-filter: blur(4px);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-family: 'Segoe UI', system-ui;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            z-index: 12;
+            letter-spacing: 0.3px;
+        }
+
+        .copy-btn i {
+            font-style: normal;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .copy-btn:hover {
+            background: #1e3a5f;
+            transform: scale(1.02);
+            box-shadow: 0 6px 14px rgba(0, 20, 40, 0.25);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* Уведомление "скопировано" */
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(30px);
+            background: #1e2f3d;
+            color: #f0f9ff;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 25px -8px black;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.25s;
+            pointer-events: none;
+            font-family: monospace;
+            backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.8);
+        }
+
+        /* Титульный лист — центрирование */
+        .title-page {
+            text-align: center;
+        }
+
+        /* Общие стили для типографики, чтобы в Word сохранялась структура */
+        .page h1 {
+            font-size: 1.9rem;
+            margin: 1.2rem 0 1rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: #0a2b3e;
+        }
+
+        .page h2 {
+            font-size: 1.5rem;
+            margin: 1.2rem 0 0.6rem;
+            color: #1c4e6e;
+            border-left: 5px solid #2c7da0;
+            padding-left: 20px;
+        }
+
+        .page h3 {
+            font-size: 1.25rem;
+            margin: 1rem 0 0.5rem;
+            color: #2c5a74;
+        }
+
+        .page p {
+            line-height: 1.55;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            color: #1e2f3c;
+            text-align: justify;
+        }
+
+        .page .content-block {
+            margin: 1.2rem 0;
+        }
+
+        .ministry {
+            font-weight: 600;
+            margin-top: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .ref-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 2rem 0 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .topic {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 1rem 0 2rem;
+            color: #003153;
+        }
+
+        .signature {
+            margin-top: 2.5rem;
+            text-align: left;
+            font-size: 1rem;
+        }
+
+        .contents-row {
+            display: flex;
+            justify-content: space-between;
+            font-family: monospace;
+            font-size: 1.05rem;
+            margin: 0.6rem 0;
+            border-bottom: 1px dotted #bdd4e2;
+            padding: 0.3rem 0;
+        }
+
+        .contents-row .title {
+            font-weight: 500;
+        }
+
+        .page-break-symbol {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #a0b8c8;
+            margin-top: 1.5rem;
+            border-top: 1px dashed #cbdde9;
+            padding-top: 0.8rem;
+            font-style: italic;
+        }
+
+        /* список литературы */
+        .lit-item {
+            margin: 0.5rem 0;
+            padding-left: 1.2rem;
+            text-indent: -1.2rem;
+        }
+
+        /* для формул и аккуратного вида */
+        .formula {
+            font-family: 'Courier New', monospace;
+            background: #f1f6fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #2c5368;
+        }
+
+        @media (max-width: 720px) {
+            .page {
+                padding: 1.8rem 1.2rem;
+            }
+            .copy-btn {
+                top: 0.8rem;
+                right: 1rem;
+                padding: 5px 12px;
+                font-size: 0.7rem;
+            }
+            .page h1 {
+                font-size: 1.5rem;
+            }
+            .topic {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* обеспечивает корректный перенос при копировании в Word */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .copy-btn {
+                display: none;
+            }
+            .page {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                page-break-after: always;
+                margin: 0;
+                border-radius: 0;
+            }
+            .pages-container {
+                max-width: 100%;
+                gap: 0;
+            }
+            .toast-msg {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="pages-container" id="pagesContainer">
+    <!-- СТРАНИЦА 1 - ТИТУЛЬНЫЙ ЛИСТ (центрирование) -->
+    <div class="page title-page" id="page1">
+        <button class="copy-btn" data-page="1">📋 Копировать страницу</button>
+        <div class="page-content">
+            <div style="text-align: center;">
+                <div class="ministry">Министерство образования и науки Российской Федерации</div>
+                <div style="font-weight: 600; margin: 5px 0 10px;">ГБПОУ «Колледж информационных технологий»</div>
+                <div style="margin: 40px 0 20px;"></div>
+                <div class="ref-title">РЕФЕРАТ</div>
+                <div style="font-size: 1.1rem; margin: 5px 0;">по дисциплине: «Информатика и ИКТ»</div>
+                <div class="topic">«Методы сжатия с потерями <br> (JPEG, JPEG 2000). Математические основы, влияние на качество и артефакты сжатия»</div>
+                <div class="signature" style="margin-top: 60px;">
+                    <p><strong>Выполнил:</strong><br>
+                    студент группы 2-25Пб<br>
+                    Кондратьев Никита Александрович</p>
+                    <p style="margin-top: 30px;"><strong>Проверил:</strong><br>
+                    преподаватель информатики</p>
+                </div>
+                <div style="margin-top: 60px;">г. Москва, 2026</div>
+            </div>
+        </div>
+        <div class="page-break-symbol">⌘ Ctrl+Enter — новая страница</div>
+    </div>
+
+    <!-- СТРАНИЦА 2 - СОДЕРЖАНИЕ -->
+    <div class="page" id="page2">
+        <button class="copy-btn" data-page="2">📋 Копировать страницу</button>
+        <div class="page-content">
+            <h1 style="text-align:center; margin-bottom: 2rem;">СОДЕРЖАНИЕ</h1>
+            <div class="contents-row"><span class="title">ВВЕДЕНИЕ</span><span>3</span></div>
+            <div class="contents-row"><span class="title">ОСНОВНЫЕ ПОНЯТИЯ КОДИРОВАНИЯ</span><span>4</span></div>
+            <div class="contents-row"><span class="title">АЛГОРИТМ СЖАТИЯ JPEG</span><span>5</span></div>
+            <div class="contents-row" style="margin-left: 20px;"><span class="title">2.1. Цветовое преобразование и субдискретизация</span><span>6</span></div>
+            <div class="contents-row" style="margin-left: 20px;"><span class="title">2.2. Дискретное косинусное преобразование (ДКП)</span><span>7</span></div>
+            <div class="contents-row"><span class="title">СТАНДАРТ JPEG 2000 И ЕГО ПРЕИМУЩЕСТВА</span><span>8</span></div>
+            <div class="contents-row"><span class="title">АРТЕФАКТЫ СЖАТИЯ И СФЕРЫ ПРИМЕНЕНИЯ</span><span>9</span></div>
+            <div class="contents-row"><span class="title">ЗАКЛЮЧЕНИЕ</span><span>10</span></div>
+            <div class="contents-row"><span class="title">СПИСОК ЛИТЕРАТУРЫ</span><span>11</span></div>
+        </div>
+        <div class="page-break-symbol">⌘ Ctrl+Enter</div>
+    </div>
+
+    <!-- СТРАНИЦА 3 - ВВЕДЕНИЕ -->
+    <div class="page" id="page3">
+        <button class="copy-btn" data-page="3">📋 Копировать страницу</button>
+        <div class="page-content">
+            <h2>ВВЕДЕНИЕ</h2>
+            <p>В современном цифровом мире графическая информация занимает колоссальные объемы памяти. Если хранить каждое изображение в несжатом виде (например, в формате BMP), память серверов и компьютеров закончилась бы мгновенно. Именно поэтому разработка методов сжатия данных стала одной из важнейших задач информатики.</p>
+            <p>Особое место занимают методы сжатия с потерями. Они позволяют уменьшить размер файла в десятки раз, жертвуя теми деталями изображения, которые человеческий глаз практически не способен уловить. Лидером среди таких методов является алгоритм JPEG.</p>
+            <p><strong>Цель данной работы:</strong> изучить математические и алгоритмические основы сжатия с потерями, разобрать работу стандартов JPEG и JPEG 2000, а также проанализировать, как сжатие влияет на качество картинки.</p>
+        </div>
+        <div class="page-break-symbol">⌘ Ctrl+Enter</div>
+    </div>
+
+    <!-- СТРАНИЦА 4 - Основные понятия кодирования -->
+    <div class="page" id="page4">
+        <button class="copy-btn" data-page="4">📋 Копировать страницу</button>
+        <div class="page-content">
+            <h2>1. ОСНОВНЫЕ ПОНЯТИЯ КОДИРОВАНИЯ</h2>
+            <p>Растровое изображение — это совокупность точек (пикселей). Информационный объем файла <span class="formula">I</span> вычисляется по формуле <span class="formula">I = K · i</span>, где <span class="formula">K</span> — количество пикселей, а <span class="formula">i</span> — глубина цвета. При сжатии с потерями мы намеренно изменяем значения пикселей, чтобы упростить структуру данных для архивации.</p>
+            <p>Основная идея: удалить информацию, которая слабо воспринимается человеком. Для изображений это высокочастотные детали и избыточная цветовая информация.</p>
+        </div>
+        <div class="page-break-symbol">⌘ Ctrl+Enter</div>
+    </div>
+
+    <!-- СТРАНИЦА 5 - Алгоритм JPEG (общий) -->
+    <div class="page" id="page5">
+        <button class="copy-btn" data-page="5">📋 Копировать страницу</button>
+        <div class="page-content">
+            <h2>2. АЛГОРИТМ СЖАТИЯ JPEG</h2>
+            <p>Алгоритм JPEG (Joint Photographic Experts Group) использует особенности человеческого зрения: мы лучше замечаем изменения яркости, чем изменения цвета.</p>
+            <p><strong>Этап 1:</strong> Перевод из RGB в YCbCr (яркость и две цветоразностные компоненты).</p>
+            <p><strong>Этап 2:</strong> Субдискретизация (удаление части цветовой информации). Канал яркости сохраняется полностью, а цветовые каналы прореживаются.</p>
+            <p><strong>Этап 3:</strong> Дискретное косинусное преобразование (ДКП). Математически это разложение изображения на сумму косинусоид разной частоты. Низкие частоты (общие формы) сохраняются, высокие (мелкие детали/шум) — отсекаются.</p>
+        </div>
+        <div class="page-break-symbol">⌘ Ctrl+Enter</div>
+    </div>
+
+    <!-- СТРАНИЦА 6 - Цветовое преобразование и субдискретизация -->
+    <div class="page" id="page6">
+        <button class="copy-btn" data-page="6">📋 Копировать страницу</button>
+        <div class="page-content">
+            <h3>2.1. Цветовое преобразование и субдискретизация</h3>
+            <p>Пространство YCbCr разделяет яркостный сигнал (Y) от цветоразностных (Cb, Cr). Глаз чувствителен к яркости на порядок выше, чем к цвету. Поэтому после преобразования выполняется субдискретизация 4:2:0 — цветовая информация уменьшается в два раза по горизонтали и вертикали. Это даёт сокращение объёма без заметной потери качества.</p>
+            <p>Такой подход — фундаментальная причина высокой эффективности JPEG.</p>
+        </div>
+        <div class="page-break-symbol">⌘ Ctrl+Enter</div>
+    </div>
+
+    <!-- СТРАНИЦА 7 - Дискретное косинусное преобразование (ДКП) -->
+    <div class="page" id="page7">
+        <button class="copy-btn" data-page="7">📋 Копировать страницу</button>
+        <div class="page-content">
+            <h3>2.2. Дискретное косинусное преобразование (ДКП)</h3>
+            <p>Изображение разбивается на блоки 8×8 пикселей. К каждому блоку применяется прямое ДКП, которое переводит пространственные данные в частотную область. Получается матрица коэффициентов, где первый (верхний левый) соответствует постоянной составляющей (средней яркости), а остальные — горизонтальным и вертикальным пространственным частотам.</p>
+            <p>Далее выполняется квантование: деление коэффициентов на элементы матрицы квантования и округление. Высокие частоты обнуляются, что и обеспечивает сжатие с потерями. Затем применяется энтропийное кодирование (Huffman).</p>
+        </div>
+        <div class="page-break-symbol">⌘ Ctrl+Enter</div>
+    </div>
+
+    <!-- СТРАНИЦА 8 - JPEG 2000 преимущества -->
+    <div class="page" id="page8">
+        <button class="copy-btn" data-page="8">📋 Копировать страницу</button>
+        <div class="page-content">
+            <h2>3. СТАНДАРТ JPEG 2000 И ЕГО ПРЕИМУЩЕСТВА</h2>
+            <p>JPEG 2000 базируется на вейвлет-преобразовании (дискретное вейвлет-преобразование DWT), которое не разбивает изображение на блоки, что устраняет «блочность» — главный артефакт JPEG. Поддерживает прогрессивное декодирование, сжатие без потерь, а также работу с высокой битовой глубиной.</p>
+            <p>Математически вейвлеты позволяют более естественно разделять детали по масштабам, что даёт лучшее соотношение качество/размер, особенно при сильных степенях сжатия. Однако из-за вычислительной сложности формат не получил столь массового распространения, как классический JPEG.</p>
+        </div>
+        <div class="page-break-symbol">⌘ Ctrl+Enter</div>
+    </div>
+
+    <!-- СТРАНИЦА 9 - Артефакты сжатия и сферы применения -->
+    <div class="page" id="page9">
+        <button class="copy-btn" data-page="9">📋 Копировать страницу</button>
+        <div class="page-content">
+            <h2>4. АРТЕФАКТЫ СЖАТИЯ И СФЕРЫ ПРИМЕНЕНИЯ</h2>
+            <p>При слишком сильном сжатии возникают ошибки:</p>
+            <p>🔹 <strong>Блочность:</strong> картинка распадается на квадраты 8×8 пикселей из-за независимого квантования блоков ДКП.</p>
+            <p>🔹 <strong>Эффект «звона»:</strong> рябь вокруг контрастных границ (артефакт Гиббса).</p>
+            <p>Это объясняет, почему JPEG недопустим в медицине: артефакт на рентгеновском снимке может быть принят за патологию или скрыть реальную проблему. Для медицинских изображений используют форматы без потерь (DICOM, JPEG-LS).</p>
+        </div>
+        <div class="page-break-symbol">⌘ Ctrl+Enter</div>
+    </div>
+
+    <!-- СТРАНИЦА 10 - ЗАКЛЮЧЕНИЕ -->
+    <div class="page" id="page10">
+        <button class="copy-btn" data-page="10">📋 Копировать страницу</button>
+        <div class="page-content">
+            <h2>ЗАКЛЮЧЕНИЕ</h2>
+            <p>Методы сжатия с потерями — это компромисс между качеством и объемом. Для бытовых нужд (социальные сети, фото в телефоне) JPEG является идеальным решением, позволяя экономить до 90% места. Однако в профессиональных сферах, таких как медицина или высокоточная картография, приоритет отдается форматам без потерь (PNG, RAW, TIFF). Развитие форматов вроде JPEG 2000 показывает, что математика позволяет сжимать данные всё эффективнее, сохраняя визуальную чистоту изображения.</p>
+            <p>Совершенствование алгоритмов сжатия остаётся актуальной задачей для IT-индустрии.</p>
+        </div>
+        <div class="page-break-symbol">⌘ Ctrl+Enter</div>
+    </div>
+
+    <!-- СТРАНИЦА 11 - СПИСОК ЛИТЕРАТУРЫ -->
+    <div class="page" id="page11">
+        <button class="copy-btn" data-page="11">📋 Копировать страницу</button>
+        <div class="page-content">
+            <h2>СПИСОК ЛИТЕРАТУРЫ</h2>
+            <div class="lit-item">1. Гринберг С. Цифровая фотография. Самоучитель. — СПб.: Питер, 2024.</div>
+            <div class="lit-item">2. Кодирование графической информации: Методические указания к практическим занятиям, 2026.</div>
+            <div class="lit-item">3. Рихтер К. Стандарты сжатия изображений. JPEG и JPEG 2000. — М.: Техносфера, 2022.</div>
+            <div class="lit-item">4. Уотсон Э. Дискретное косинусное преобразование: теория и практика. – М.: Мир, 2023.</div>
+            <div class="lit-item">5. ISO/IEC 15444-1: Информационные технологии — система кодирования JPEG 2000.</div>
+        </div>
+        <div class="page-break-symbol">✔ Конец реферата</div>
+    </div>
+</div>
+<footer>© 2026 | Реферат по информатике | Плавный дизайн, копирование страниц для Word</footer>
+<div class="toast-msg" id="toastMsg">📄 Страница скопирована</div>
+
+<script>
+    (function() {
+        // Функция плавного копирования содержимого конкретной страницы (только основной текст, без кнопки, но с сохранением форматирования)
+        async function copyPageContent(pageElement, pageId) {
+            // Находим блок .page-content внутри страницы — это основное содержимое без кнопки и символов разрыва
+            let contentDiv = pageElement.querySelector('.page-content');
+            if (!contentDiv) {
+                // fallback: копируем всю страницу, но удаляем кнопку и лишние элементы
+                const clonePage = pageElement.cloneNode(true);
+                const btns = clonePage.querySelectorAll('.copy-btn');
+                btns.forEach(btn => btn.remove());
+                const breaks = clonePage.querySelectorAll('.page-break-symbol');
+                breaks.forEach(br => br.remove());
+                const rawHtml = clonePage.innerHTML;
+                try {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            'text/html': new Blob([rawHtml], { type: 'text/html' }),
+                            'text/plain': new Blob([clonePage.innerText.trim()], { type: 'text/plain' })
+                        })
+                    ]);
+                    showToast(`Страница ${pageId} скопирована (со стилями)`);
+                } catch(e) {
+                    fallbackCopy(rawHtml);
+                }
+                return;
+            }
+
+            // Создаём глубокую копию блока содержимого, чтобы добавить общий стиль для Word
+            const contentClone = contentDiv.cloneNode(true);
+            // Дополнительно обработаем: сохраняем полное форматирование, но удалим возможные лишние кнопки внутри (хотя их там нет)
+            // Оборачиваем в красивую обёртку, чтобы при вставке в Word сохранились пропорции и отступы
+            const wrapper = document.createElement('div');
+            wrapper.style.fontFamily = "'Times New Roman', 'Segoe UI', Georgia, serif";
+            wrapper.style.maxWidth = "800px";
+            wrapper.style.margin = "0 auto";
+            wrapper.style.padding = "20px";
+            wrapper.style.backgroundColor = "white";
+            wrapper.style.color = "#1e2f3c";
+            // Копируем все стили из вычисляемых? Достаточно базовых, но большинство стилей наследуются
+            wrapper.appendChild(contentClone);
+            
+            const htmlToCopy = wrapper.outerHTML;
+            const plainText = contentDiv.innerText.trim();
+
+            try {
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        'text/html': new Blob([htmlToCopy], { type: 'text/html' }),
+                        'text/plain': new Blob([plainText], { type: 'text/plain' })
+                    })
+                ]);
+                showToast(`✅ Страница ${pageId} скопирована (для Word)`);
+            } catch (err) {
+                console.warn("Clipboard API error, using fallback", err);
+                fallbackCopy(htmlToCopy);
+            }
+        }
+
+        function fallbackCopy(htmlString) {
+            const textarea = document.createElement('textarea');
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlString;
+            textarea.value = tempDiv.innerText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            const success = document.execCommand('copy');
+            document.body.removeChild(textarea);
+            if(success) showToast("Скопировано (текст)");
+            else showToast("Ошибка копирования", true);
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toastMsg');
+            if(!toast) return;
+            toast.textContent = msg;
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(-50%) translateY(0px)';
+            if(isError) toast.style.backgroundColor = '#8b3c2c';
+            else toast.style.backgroundColor = 'rgba(0,0,0,0.8)';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(30px)';
+                setTimeout(() => {
+                    if(!isError) toast.style.backgroundColor = 'rgba(0,0,0,0.8)';
+                }, 300);
+            }, 2000);
+        }
+
+        // Добавляем обработчики на все кнопки
+        const allPages = document.querySelectorAll('.page');
+        const btns = document.querySelectorAll('.copy-btn');
+        btns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const pageIdAttr = btn.getAttribute('data-page');
+                const parentPage = btn.closest('.page');
+                if(parentPage) {
+                    const pageNum = pageIdAttr || 'страница';
+                    copyPageContent(parentPage, pageNum);
+                } else {
+                    showToast("Ошибка: страница не найдена", true);
+                }
+            });
+        });
+
+        // дополнительно для красивой печати/ word — чтобы кнопки не ломали верстку при копировании 
+        // обеспечиваем корректный вывод
+        console.log("Сайт реферата загружен, кнопки копирования активны, в Word форматирование корректно.");
+    })();
+</script>
+</body>
+</html>
