@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>SmartSchedule | Расписание занятий</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Inter', 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: linear-gradient(145deg, #eef2f9 0%, #e0e7f0 100%);
+            min-height: 100vh;
+            padding: 20px 16px 40px;
+            color: #1a2c3e;
+        }
+
+        /* основной контейнер */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* карточки и тени */
+        .card {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(2px);
+            border-radius: 44px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.02);
+            padding: 20px 18px;
+            margin-bottom: 24px;
+            transition: all 0.2s ease;
+        }
+
+        /* переключатель групп */
+        .groups-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        .group-btn {
+            background: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #2c3e66;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+        }
+        .group-btn.active {
+            background: #1e4a76;
+            color: white;
+            box-shadow: 0 8px 18px rgba(30,74,118,0.3);
+            transform: scale(1.02);
+        }
+        .group-btn:active { transform: scale(0.96); }
+
+        /* переключатель дней */
+        .day-toggle {
+            display: flex;
+            gap: 12px;
+            background: #f0f3f8;
+            border-radius: 100px;
+            padding: 5px;
+            margin-bottom: 20px;
+        }
+        .day-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            border-radius: 50px;
+            font-weight: 600;
+            background: transparent;
+            border: none;
+            font-size: 1rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            color: #4a627a;
+        }
+        .day-option.active {
+            background: white;
+            color: #1e4a76;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* now bar */
+        .live-info {
+            background: #eef3fc;
+            border-radius: 28px;
+            padding: 14px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .current-lesson {
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: #1e4a7610;
+            padding: 6px 14px;
+            border-radius: 32px;
+        }
+        .countdown {
+            font-family: monospace;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #0f4c5f;
+        }
+
+        /* таблица расписания */
+        .schedule-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+        .schedule-table tr {
+            transition: all 0.2s;
+        }
+        .time-cell {
+            font-weight: 600;
+            background: #f8fafd;
+            padding: 12px 12px;
+            border-radius: 24px 0 0 24px;
+            width: 85px;
+            font-size: 0.85rem;
+            color: #2c3e66;
+        }
+        .subject-cell {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 0 24px 24px 0;
+            font-weight: 500;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            word-break: break-word;
+        }
+        /* подсветка текущего урока */
+        tr.current-lesson-row .time-cell {
+            background: #ffe6b3;
+            font-weight: 800;
+            color: #a45d00;
+        }
+        tr.current-lesson-row .subject-cell {
+            background: #fff0d6;
+            border-left: 4px solid #f5a623;
+            font-weight: 700;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 30px;
+            color: #6c7e97;
+            font-style: italic;
+        }
+
+        /* подвал */
+        .footer-note {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #6f8faa;
+            margin-top: 32px;
+        }
+
+        @media (max-width: 550px) {
+            body { padding: 16px 12px 30px; }
+            .time-cell { width: 70px; font-size: 0.75rem; padding: 10px 6px; }
+            .subject-cell { font-size: 0.85rem; padding: 10px 12px; }
+            .group-btn { padding: 6px 14px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- переключатель групп -->
+    <div class="groups-bar" id="groupsBar"></div>
+
+    <!-- карточка с расписанием -->
+    <div class="card">
+        <div class="day-toggle" id="dayToggle">
+            <button class="day-option active" data-day="today">📅 СЕГОДНЯ</button>
+            <button class="day-option" data-day="tomorrow">🌙 ЗАВТРА</button>
+        </div>
+
+        <div id="liveStatus" class="live-info">
+            <span class="current-lesson" id="currentLessonName">—</span>
+            <span class="countdown" id="countdownTimer">--:--</span>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="schedule-table" id="scheduleTable">
+                <tbody id="scheduleBody">
+                    <tr><td colspan="2" class="empty-message">Загрузка...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="footer-note">⏱ обновление каждую секунду • данные синхронизированы</div>
+</div>
+
+<script>
+    // ====================== ГРУППЫ =======================
+    const GROUPS = ["2-25Пб", "7-25Лб", "8-25Мб", "9-25Руб", "19-25ППб", "49-25ОП"];
+    let currentGroup = "2-25Пб";
+    let currentDay = "today";   // 'today' или 'tomorrow'
+
+    // СТРУКТУРА ДАННЫХ ПО УМОЛЧАНИЮ (если в localStorage нет админских правок)
+    const DEFAULT_SCHEDULE = {
+        "2-25Пб": {
+            today: [
+                { time: "08:30-10:00", subject: "Математика (лекция)" },
+                { time: "10:10-11:40", subject: "Физика" },
+                { time: "11:50-13:20", subject: "Программирование" },
+                { time: "13:30-15:00", subject: "Английский язык" },
+                { time: "15:10-16:40", subject: "Базы данных" }
+            ],
+            tomorrow: [
+                { time: "08:30-10:00", subject: "Web-разработка" },
+                { time: "10:10-11:40", subject: "ООП" },
+                { time: "11:50-13:20", subject: "Философия" },
+                { time: "13:30-15:00", subject: "Физкультура" }
+            ]
+        },
+        "7-25Лб": {
+            today: [
+                { time: "08:30-10:00", subject: "Литература" },
+                { time: "10:10-11:40", subject: "Русский язык" },
+                { time: "11:50-13:20", subject: "Иностранный" },
+                { time: "13:30-15:00", subject: "История" }
+            ],
+            tomorrow: [
+                { time: "08:30-10:00", subject: "Обществознание" },
+                { time: "10:10-11:40", subject: "Право" },
+                { time: "11:50-13:20", subject: "Риторика" }
+            ]
+        },
+        "8-25Мб": {
+            today: [
+                { time: "08:30-10:00", subject: "Математический анализ" },
+                { time: "10:10-11:40", subject: "Дискретная математика" },
+                { time: "11:50-13:20", subject: "Алгоритмы" },
+                { time: "13:30-15:00", subject: "Комп.сети" }
+            ],
+            tomorrow: [
+                { time: "08:30-10:00", subject: "Диффуры" },
+                { time: "10:10-11:40", subject: "Python" },
+                { time: "11:50-13:20", subject: "Английский" }
+            ]
+        },
+        "9-25Руб": {
+            today: [
+                { time: "08:30-10:00", subject: "Экономика" },
+                { time: "10:10-11:40", subject: "Маркетинг" },
+                { time: "11:50-13:20", subject: "Бухучет" }
+            ],
+            tomorrow: [
+                { time: "08:30-10:00", subject: "Налоги" },
+                { time: "10:10-11:40", subject: "Менеджмент" },
+                { time: "11:50-13:20", subject: "Практикум" }
+            ]
+        },
+        "19-25ППб": {
+            today: [
+                { time: "08:30-10:00", subject: "Психология" },
+                { time: "10:10-11:40", subject: "Педагогика" },
+                { time: "11:50-13:20", subject: "Методика" }
+            ],
+            tomorrow: [
+                { time: "08:30-10:00", subject: "Социология" },
+                { time: "10:10-11:40", subject: "Коррекционная педагогика" }
+            ]
+        },
+        "49-25ОП": {
+            today: [
+                { time: "08:30-10:00", subject: "Охрана труда" },
+                { time: "10:10-11:40", subject: "Промбезопасность" },
+                { time: "11:50-13:20", subject: "Экология" }
+            ],
+            tomorrow: [
+                { time: "08:30-10:00", subject: "Нормирование" },
+                { time: "10:10-11:40", subject: "Риски" }
+            ]
+        }
+    };
+
+    // загрузка данных из localStorage (админка публикует сюда)
+    function loadScheduleData() {
+        const stored = localStorage.getItem("SmartSchedule_Data");
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                // слияние с дефолтом, чтобы были все группы
+                for (let gr of GROUPS) {
+                    if (!parsed[gr]) parsed[gr] = { today: [], tomorrow: [] };
+                    if (!parsed[gr].today) parsed[gr].today = [];
+                    if (!parsed[gr].tomorrow) parsed[gr].tomorrow = [];
+                }
+                return parsed;
+            } catch(e) { console.warn(e); return DEFAULT_SCHEDULE; }
+        }
+        return DEFAULT_SCHEDULE;
+    }
+
+    let scheduleMaster = loadScheduleData();
+
+    // обновить отображение таблицы + живой урок
+    function renderSchedule() {
+        const groupData = scheduleMaster[currentGroup] || { today: [], tomorrow: [] };
+        let lessons = (currentDay === "today") ? [...groupData.today] : [...groupData.tomorrow];
+        const tbody = document.getElementById("scheduleBody");
+        if (!lessons.length) {
+            tbody.innerHTML = `<tr><td colspan="2" class="empty-message">📭 Нет пар на этот день</td></tr>`;
+            document.getElementById("currentLessonName").innerText = "—";
+            document.getElementById("countdownTimer").innerText = "--:--";
+            return;
+        }
+
+        // получаем текущее время
+        const now = new Date();
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+        // вычисляем индекс текущего урока
+        let currentLessonIndex = -1;
+        for (let i = 0; i < lessons.length; i++) {
+            const [start] = lessons[i].time.split('-');
+            const [startHour, startMin] = start.split(':').map(Number);
+            const startTotal = startHour * 60 + startMin;
+            const [end] = lessons[i].time.split('-')[1] ? lessons[i].time.split('-')[1] : "00:00";
+            const [endHour, endMin] = end.split(':').map(Number);
+            const endTotal = endHour * 60 + endMin;
+            if (currentMinutes >= startTotal && currentMinutes < endTotal) {
+                currentLessonIndex = i;
+                break;
+            }
+        }
+
+        // строим строки таблицы
+        let html = "";
+        lessons.forEach((lesson, idx) => {
+            const isCurrent = (idx === currentLessonIndex && currentDay === "today");
+            const rowClass = isCurrent ? 'current-lesson-row' : '';
+            html += `<tr class="${rowClass}">
+                        <td class="time-cell">${lesson.time}</td>
+                        <td class="subject-cell">${escapeHtml(lesson.subject)}</td>
+                     </tr>`;
+        });
+        tbody.innerHTML = html;
+
+        // Обновляем "сейчас идет" и таймер
+        if (currentDay === "today" && currentLessonIndex !== -1) {
+            const currentSubj = lessons[currentLessonIndex].subject;
+            document.getElementById("currentLessonName").innerHTML = `📖 Сейчас: ${escapeHtml(currentSubj)}`;
+            const [endTimeStr] = lessons[currentLessonIndex].time.split('-')[1] ? [lessons[currentLessonIndex].time.split('-')[1]] : ["00:00"];
+            const [endHour, endMin] = endTimeStr.split(':').map(Number);
+            const endTotal = endHour * 60 + endMin;
+            let remaining = endTotal - currentMinutes;
+            if (remaining < 0) remaining = 0;
+            const mins = Math.floor(remaining);
+            const secs = 0; // для простоты покажем минуты
+            document.getElementById("countdownTimer").innerHTML = `⏰ до звонка: ${mins} мин`;
+            // каждую секунду обновляем таймер (будет вызываться отдельно)
+        } else if (currentDay === "today") {
+            document.getElementById("currentLessonName").innerHTML = `✨ Сейчас нет пары`;
+            // поиск ближайшего урока
+            let nextStart = null;
+            for (let i=0; i<lessons.length; i++) {
+                const [start] = lessons[i].time.split('-');
+                const [sH, sM] = start.split(':').map(Number);
+                const startTot = sH*60 + sM;
+                if (startTot > currentMinutes) { nextStart = startTot; break; }
+            }
+            if (nextStart !== null) {
+                const diff = nextStart - currentMinutes;
+                document.getElementById("countdownTimer").innerHTML = `⏳ до начала: ${diff} мин`;
+            } else {
+                document.getElementById("countdownTimer").innerHTML = `🎉 пары завершены`;
+            }
+        } else {
+            // завтра
+            document.getElementById("currentLessonName").innerHTML = `📅 Расписание на завтра`;
+            document.getElementById("countdownTimer").innerHTML = `✨ подготовься`;
+        }
+    }
+
+    // секундный счетчик для корректного обновления времени
+    let timerInterval = null;
+    function startLiveTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (currentDay === "today") {
+                renderSchedule(); // перерендер чтобы обновить подсветку и таймер
+            } else {
+                // если завтра, тоже ничего страшного
+                renderSchedule();
+            }
+        }, 1000);
+    }
+
+    // вспомогательная функция
+    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+    // переключение группы
+    function initGroupsUI() {
+        const bar = document.getElementById("groupsBar");
+        bar.innerHTML = "";
+        GROUPS.forEach(gr => {
+            const btn = document.createElement("button");
+            btn.className = "group-btn" + (currentGroup === gr ? " active" : "");
+            btn.innerText = gr;
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".group-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentGroup = gr;
+                renderSchedule();
+            });
+            bar.appendChild(btn);
+        });
+    }
+
+    // инициализация переключателя дней
+    function initDayToggle() {
+        const btns = document.querySelectorAll(".day-option");
+        btns.forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                btns.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentDay = btn.getAttribute("data-day");
+                renderSchedule();
+            });
+        });
+    }
+
+    // слушаем изменения из админки (если они произошли в localStorage на другой вкладке)
+    window.addEventListener("storage", (e) => {
+        if (e.key === "SmartSchedule_Data") {
+            scheduleMaster = loadScheduleData();
+            renderSchedule();
+        }
+    });
+
+    // начальная загрузка
+    function init() {
+        initGroupsUI();
+        initDayToggle();
+        renderSchedule();
+        startLiveTimer();
+    }
+
+    init();
+</script>
+</body>
+</html>
