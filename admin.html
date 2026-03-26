@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Админ-панель | Редактор расписания</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, 'Segoe UI', monospace;
+            background: #f1f5f9;
+            padding: 24px 16px;
+            color: #0f172a;
+        }
+
+        .admin-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .admin-card {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 0;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            background: #0f172a;
+            padding: 20px 24px;
+            border-bottom: 2px solid #334155;
+        }
+
+        .card-header h2 {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        .control-group {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .control-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #475569;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        select, input {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            color: #0f172a;
+            font-family: monospace;
+        }
+
+        select {
+            cursor: pointer;
+            min-width: 180px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        button {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            color: #334155;
+        }
+
+        button.primary {
+            background: #0f172a;
+            border-color: #0f172a;
+            color: white;
+        }
+
+        button.danger {
+            border-color: #dc2626;
+            color: #dc2626;
+        }
+
+        button.success {
+            background: #059669;
+            border-color: #059669;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .lessons-list {
+            margin-top: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .lesson-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #fefefe;
+        }
+
+        .lesson-row:last-child {
+            border-bottom: none;
+        }
+
+        .lesson-row input {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .time-input {
+            flex: 0.8;
+            min-width: 120px;
+            font-family: monospace;
+        }
+
+        .subject-input {
+            flex: 2;
+        }
+
+        .delete-btn {
+            padding: 6px 16px;
+            background: #fff;
+            border: 1px solid #dc2626;
+            color: #dc2626;
+            font-size: 0.8rem;
+        }
+
+        .add-btn {
+            width: 100%;
+            margin-top: 16px;
+            padding: 12px;
+            background: white;
+            border: 1px solid #059669;
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .publish-btn {
+            width: 100%;
+            margin-top: 24px;
+            padding: 14px;
+            background: #059669;
+            border: none;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .info-note {
+            margin-top: 20px;
+            padding: 12px;
+            background: #fef9e3;
+            border-left: 3px solid #f59e0b;
+            font-size: 0.75rem;
+            color: #78350f;
+        }
+
+        @media (max-width: 640px) {
+            .card-body {
+                padding: 16px;
+            }
+            .lesson-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .lesson-row input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="admin-container">
+    <div class="admin-card">
+        <div class="card-header">
+            <h2>⚙️ АДМИН-ПАНЕЛЬ</h2>
+        </div>
+        <div class="card-body">
+            <div class="control-group">
+                <div class="control-label">ГРУППА</div>
+                <select id="adminGroupSelect">
+                    <option value="2-25Пб">2-25Пб</option>
+                    <option value="7-25Лб">7-25Лб</option>
+                    <option value="8-25Мб">8-25Мб</option>
+                    <option value="9-25Руб">9-25Руб</option>
+                    <option value="19-25ППб">19-25ППб</option>
+                    <option value="49-25ОП">49-25ОП</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">ДЕНЬ</div>
+                <div class="button-group">
+                    <button id="adminDayTodayBtn" class="primary">СЕГОДНЯ</button>
+                    <button id="adminDayTomorrowBtn">ЗАВТРА</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">РЕДАКТИРОВАНИЕ ПАР</div>
+                <div id="lessonsEditorPanel"></div>
+            </div>
+
+            <button id="publishBtn" class="publish-btn">📡 ОПУБЛИКОВАТЬ ИЗМЕНЕНИЯ</button>
+            
+            <div class="info-note">
+                ⚡ После публикации изменения мгновенно отображаются на главной странице расписания.<br>
+                📅 Формат времени: ЧЧ:ММ-ЧЧ:ММ (пример: 08:30-10:00)
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const GROUPS_ADMIN = ["2-25Пб", "7-25Лб", "8-25Мб", "9-25Руб", "19-25ППб", "49-25ОП"];
+    let currentAdminGroup = "2-25Пб";
+    let currentAdminDay = "today";
+
+    const DEFAULT_SCHEDULE_ADMIN = {
+        "2-25Пб": {
+            today: [
+                { time: "08:30-10:00", subject: "Математика (лекция)" },
+                { time: "10:10-11:40", subject: "Физика" },
+                { time: "11:50-13:20", subject: "Программирование" },
+                { time: "13:30-15:00", subject: "Английский язык" },
+                { time: "15:10-16:40", subject: "Базы данных" }
+            ],
+            tomorrow: [
+                { time: "08:30-10:00", subject: "Web-разработка" },
+                { time: "10:10-11:40", subject: "ООП" },
+                { time: "11:50-13:20", subject: "Философия" },
+                { time: "13:30-15:00", subject: "Физкультура" }
+            ]
+        },
+        "7-25Лб": {
+            today: [
+                { time: "08:30-10:00", subject: "Литература" },
+                { time: "10:10-11:40", subject: "Русский язык" },
+                { time: "11:50-13:20", subject: "Иностранный язык" },
+                { time: "13:30-15:00", subject: "История" }
+            ],
+            tomorrow: [
+                { time: "08:30-10:00", subject: "Обществознание" },
+                { time: "10:10-11:40", subject: "Право" },
+                { time: "11:50-13:20", subject: "Риторика" }
+            ]
+        },
+        "8-25Мб": {
+            today: [
+                { time: "08:30-10:00", subject: "Математический анализ" },
+                { time: "10:10-11:40", subject: "Дискретная математика" },
+                { time: "11:50-13:20", subject: "Алгоритмы" },
+                { time: "13:30-15:00", subject: "Компьютерные сети" }
+            ],
+            tomorrow: [
+                { time: "08:30-10:00", subject: "Дифференциальные уравнения" },
+                { time: "10:10-11:40", subject: "Python программирование" },
+                { time: "11:50-13:20", subject: "Английский язык" }
+            ]
+        },
+        "9-25Руб": {
+            today: [
+                { time: "08:30-10:00", subject: "Экономика" },
+                { time: "10:10-11:40", subject: "Маркетинг" },
+                { time: "11:50-13:20", subject: "Бухгалтерский учет" }
+            ],
+            tomorrow: [
+                { time: "08:30-10:00", subject: "Налоги и налогообложение" },
+                { time: "10:10-11:40", subject: "Менеджмент" },
+                { time: "11:50-13:20", subject: "Практикум" }
+            ]
+        },
+        "19-25ППб": {
+            today: [
+                { time: "08:30-10:00", subject: "Психология" },
+                { time: "10:10-11:40", subject: "Педагогика" },
+                { time: "11:50-13:20", subject: "Методика преподавания" }
+            ],
+            tomorrow: [
+                { time: "08:30-10:00", subject: "Социология" },
+                { time: "10:10-11:40", subject: "Коррекционная педагогика" }
+            ]
+        },
+        "49-25ОП": {
+            today: [
+                { time: "08:30-10:00", subject: "Охрана труда" },
+                { time: "10:10-11:40", subject: "Промышленная безопасность" },
+                { time: "11:50-13:20", subject: "Экология" }
+            ],
+            tomorrow: [
+                { time: "08:30-10:00", subject: "Нормирование труда" },
+                { time: "10:10-11:40", subject: "Управление рисками" }
+            ]
+        }
+    };
+
+    function loadAdminData() {
+        const stored = localStorage.getItem("SmartSchedule_Data");
+        if (stored) {
+            try {
+                let parsed = JSON.parse(stored);
+                for (let g of GROUPS_ADMIN) {
+                    if (!parsed[g]) parsed[g] = { today: [], tomorrow: [] };
+                    if (!parsed[g].today) parsed[g].today = [];
+                    if (!parsed[g].tomorrow) parsed[g].tomorrow = [];
+                }
+                return parsed;
+            } catch(e) {}
+        }
+        return JSON.parse(JSON.stringify(DEFAULT_SCHEDULE_ADMIN));
+    }
+
+    let adminData = loadAdminData();
+
+    function saveAdminDataToLocal() {
+        localStorage.setItem("SmartSchedule_Data", JSON.stringify(adminData));
+        window.dispatchEvent(new StorageEvent('storage', { 
+            key: 'SmartSchedule_Data', 
+            newValue: JSON.stringify(adminData) 
+        }));
+        alert("✅ Расписание опубликовано!");
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function renderLessonEditor() {
+        const container = document.getElementById("lessonsEditorPanel");
+        const lessons = currentAdminDay === "today" ? adminData[currentAdminGroup].today : adminData[currentAdminGroup].tomorrow;
+        
+        if (!lessons) return;
+
+        let html = `<div class="lessons-list">`;
+        lessons.forEach((lesson, idx) => {
+            html += `
+                <div class="lesson-row">
+                    <input type="text" class="time-input" value="${escapeHtml(lesson.time)}" 
+                           placeholder="08:30-10:00" data-index="${idx}" data-field="time">
+                    <input type="text" class="subject-input" value="${escapeHtml(lesson.subject)}" 
+                           placeholder="Название предмета" data-index="${idx}" data-field="subject">
+                    <button class="delete-btn" data-index="${idx}">УДАЛИТЬ</button>
+                </div>
+            `;
+        });
+        html += `</div><button id="addLessonBtn" class="add-btn">+ ДОБАВИТЬ ПАРУ</button>`;
+        container.innerHTML = html;
+
+        // обработчики изменения времени
+        document.querySelectorAll('.time-input').forEach(inp => {
+            inp.addEventListener('change', (e) => {
+                const idx = parseInt(inp.dataset.index);
+                if (currentAdminDay === "today") {
+                    adminData[currentAdminGroup].today[idx].time = inp.value;
+                } else {
+                    adminData[currentAdminGroup].tomorrow[idx].time = inp.value;
+                }
+            });
+        });
+
+        document.querySelectorAll('.subject-input').forEach(inp => {
+            inp.addEventListener('change', (e) => {
+                const idx = parseInt(inp.dataset.index);
+                if (currentAdminDay === "today") {
+                    adminData[currentAdminGroup].today[idx].subject = inp.value;
+                } else {
+                    adminData[currentAdminGroup].tomorrow[idx].subject = inp.value;
+                }
+            });
+        });
+
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const idx = parseInt(btn.dataset.index);
+                if (currentAdminDay === "today") {
+                    adminData[currentAdminGroup].today.splice(idx, 1);
+                } else {
+                    adminData[currentAdminGroup].tomorrow.splice(idx, 1);
+                }
+                renderLessonEditor();
+            });
+        });
+
+        const addBtn = document.getElementById("addLessonBtn");
+        if (addBtn) {
+            addBtn.addEventListener('click', () => {
+                const newLesson = { time: "12:00-13:30", subject: "Новый предмет" };
+                if (currentAdminDay === "today") {
+                    adminData[currentAdminGroup].today.push(newLesson);
+                } else {
+                    adminData[currentAdminGroup].tomorrow.push(newLesson);
+                }
+                renderLessonEditor();
+            });
+        }
+    }
+
+    document.getElementById("adminGroupSelect").addEventListener("change", (e) => {
+        currentAdminGroup = e.target.value;
+        renderLessonEditor();
+    });
+
+    document.getElementById("adminDayTodayBtn").addEventListener("click", () => {
+        currentAdminDay = "today";
+        document.getElementById("adminDayTodayBtn").classList.add("primary");
+        document.getElementById("adminDayTomorrowBtn").classList.remove("primary");
+        renderLessonEditor();
+    });
+
+    document.getElementById("adminDayTomorrowBtn").addEventListener("click", () => {
+        currentAdminDay = "tomorrow";
+        document.getElementById("adminDayTomorrowBtn").classList.add("primary");
+        document.getElementById("adminDayTodayBtn").classList.remove("primary");
+        renderLessonEditor();
+    });
+
+    document.getElementById("publishBtn").addEventListener("click", () => {
+        saveAdminDataToLocal();
+    });
+
+    renderLessonEditor();
+</script>
+</body>
+</html>
