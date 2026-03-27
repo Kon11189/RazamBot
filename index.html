@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SYSTEM CORRUPTION // VIRUS ACTIVE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* Запрет выделения для эффекта "заражения" */
+        }
+
+        body {
+            background: #000000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', 'Fira Code', monospace;
+            overflow: hidden;
+            position: relative;
+            animation: subtleGlitch 0.3s infinite;
+        }
+
+        /* Глючный фон + тряска экрана */
+        @keyframes screenShake {
+            0% { transform: translate(0px, 0px); }
+            10% { transform: translate(-2px, 1px); }
+            20% { transform: translate(2px, -1px); }
+            30% { transform: translate(-1px, 2px); }
+            40% { transform: translate(1px, -2px); }
+            50% { transform: translate(-2px, -1px); }
+            60% { transform: translate(2px, 1px); }
+            70% { transform: translate(1px, 2px); }
+            80% { transform: translate(-1px, -1px); }
+            90% { transform: translate(0px, 0px); }
+            100% { transform: translate(0px, 0px); }
+        }
+
+        @keyframes subtleGlitch {
+            0% { opacity: 1; text-shadow: 0px 0px 0px #0f0; }
+            95% { opacity: 1; text-shadow: 0px 0px 0px #0f0; }
+            96% { opacity: 0.9; text-shadow: -2px 0px 2px #ff00cc; }
+            97% { opacity: 1; text-shadow: 2px 0px 2px #00ffaa; }
+            98% { opacity: 0.95; text-shadow: -1px 0px 1px #ff00aa; }
+            100% { opacity: 1; text-shadow: 0px 0px 0px #0f0; }
+        }
+
+        /* Мигающий красный / индикатор угрозы */
+        @keyframes redPulse {
+            0% { background-color: rgba(255, 0, 0, 0); box-shadow: 0 0 0 rgba(255, 0, 0, 0);}
+            50% { background-color: rgba(255, 0, 0, 0.2); box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);}
+            100% { background-color: rgba(255, 0, 0, 0); box-shadow: 0 0 0 rgba(255, 0, 0, 0);}
+        }
+
+        .virus-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+            background: radial-gradient(circle at 20% 40%, #0a0a0a, #000000);
+        }
+
+        /* Верхняя панель: статус + таймер */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 1px solid #0f0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        .infection-status {
+            color: #ff4444;
+            text-shadow: 0 0 5px #ff0000;
+            animation: blinkRed 1s step-end infinite;
+        }
+
+        @keyframes blinkRed {
+            0%, 100% { opacity: 1; text-shadow: 0 0 5px red; }
+            50% { opacity: 0.6; text-shadow: 0 0 12px #ff6666; }
+        }
+
+        .timer-box {
+            font-size: 2rem;
+            font-weight: bold;
+            background: #000000aa;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            letter-spacing: 4px;
+            color: #0f0;
+            border: 1px solid #0f0;
+            box-shadow: 0 0 10px #0f0;
+        }
+
+        /* Индикатор прогресса заражения */
+        .progress-section {
+            margin: 20px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            color: #0f0;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 28px;
+            background-color: #111;
+            border: 1px solid #0f0;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: inset 0 0 8px #000;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: repeating-linear-gradient(45deg, #00aa00, #00ff00 15px, #00aa00 30px);
+            transition: width 0.2s linear;
+            box-shadow: 0 0 12px #00ff00;
+            border-radius: 14px;
+        }
+
+        /* Лог-консоль (вирусные сообщения) */
+        .log-console {
+            flex: 1;
+            background: #000000aa;
+            border: 1px solid #2aff2a;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            font-family: monospace;
+            color: #0f0;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+            backdrop-filter: blur(2px);
+            max-height: 40vh;
+        }
+
+        .log-entry {
+            border-left: 3px solid #0f0;
+            padding-left: 12px;
+            margin: 8px 0;
+            font-size: 0.85rem;
+            word-break: break-word;
+            animation: fadeInLog 0.2s ease-out;
+        }
+
+        @keyframes fadeInLog {
+            from { opacity: 0; transform: translateX(-8px);}
+            to { opacity: 1; transform: translateX(0);}
+        }
+
+        .critical-entry {
+            color: #ff8888;
+            border-left-color: #ff0000;
+            text-shadow: 0 0 2px red;
+        }
+
+        /* Нижняя панель с предупреждением */
+        .warning-footer {
+            text-align: center;
+            color: #8f8f8f;
+            font-size: 0.7rem;
+            border-top: 1px dashed #2a2a2a;
+            padding-top: 12px;
+            margin-top: 10px;
+        }
+
+        /* Эффект "взлома" после таймера */
+        .final-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            backdrop-filter: blur(6px);
+            background: #000000dd;
+            animation: redPulse 0.2s infinite;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        .final-message h1 {
+            font-size: 3rem;
+            color: red;
+            text-shadow: 0 0 20px red, 0 0 8px #ff0000;
+            margin-bottom: 1rem;
+            animation: glitchText 0.5s infinite;
+        }
+
+        @keyframes glitchText {
+            0% { transform: skew(0deg, 0deg); opacity: 1; text-shadow: 2px 0 red, -2px 0 blue;}
+            25% { transform: skew(2deg, 1deg); text-shadow: -3px 0 cyan, 3px 0 magenta;}
+            50% { transform: skew(-1deg, -0.5deg); text-shadow: 1px 0 lime, -1px 0 red;}
+            75% { transform: skew(1deg, 0.5deg); text-shadow: 0 0 8px white;}
+            100% { transform: skew(0deg, 0deg);}
+        }
+
+        .final-message p {
+            font-size: 1.4rem;
+            color: #ff7777;
+            max-width: 80%;
+            margin-top: 20px;
+        }
+
+        .restart-hint {
+            margin-top: 40px;
+            font-size: 0.8rem;
+            color: #aaa;
+            cursor: pointer;
+            background: #1a1a1a;
+            padding: 8px 20px;
+            border-radius: 40px;
+            border: 1px solid red;
+            transition: 0.2s;
+        }
+
+        .restart-hint:hover {
+            background: red;
+            color: black;
+            box-shadow: 0 0 15px red;
+        }
+
+        /* анимация мигающего курсора в консоли */
+        .cursor-blink {
+            display: inline-block;
+            width: 10px;
+            height: 16px;
+            background-color: #0f0;
+            vertical-align: middle;
+            margin-left: 6px;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* скроллбар стилизованный */
+        .log-console::-webkit-scrollbar {
+            width: 6px;
+        }
+        .log-console::-webkit-scrollbar-track {
+            background: #111;
+        }
+        .log-console::-webkit-scrollbar-thumb {
+            background: #0f0;
+            border-radius: 4px;
+        }
+
+        /* дополнительная тряска экрана при активном вирусе */
+        .shake-active {
+            animation: screenShake 0.12s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="virus-container" id="appContainer">
+        <div class="status-bar">
+            <div class="infection-status">
+                ⚠ ВИРУС: АКТИВНАЯ УГРОЗА ⚠
+            </div>
+            <div class="timer-box" id="timerDisplay">01:00</div>
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-label">
+                <span>🔴 ЗАРАЖЕНИЕ СИСТЕМЫ</span>
+                <span id="percentValue">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="log-console" id="logConsole">
+            <div class="log-entry">[SYSTEM] > Инициализация вирусного модуля...</div>
+            <div class="log-entry">[SYSTEM] > Обнаружен удаленный доступ</div>
+            <div class="log-entry critical-entry">[!] ВНИМАНИЕ! Обнаружена вредоносная активность [!]</div>
+            <div class="log-entry">[>] Запуск таймера авто-уничтожения: 60 секунд</div>
+            <div class="log-entry" id="cursorLine">[WAIT] Сбор данных...<span class="cursor-blink"></span></div>
+        </div>
+
+        <div class="warning-footer">
+            ⛔ НЕ ВЫКЛЮЧАЙТЕ КОМПЬЮТЕР ⛔<br>
+            Идет шифрование файлов... Отключение приведет к потере данных
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ----- ВИРУСНЫЙ ТАЙМЕР 60 СЕКУНД -----
+            let timeLeft = 60;          // секунд
+            let intervalId = null;
+            let isFinished = false;
+            let progressInterval = null;
+            let logInterval = null;
+            let shakeInterval = null;
+            
+            const timerDisplay = document.getElementById('timerDisplay');
+            const progressFill = document.getElementById('progressFill');
+            const percentSpan = document.getElementById('percentValue');
+            const logConsole = document.getElementById('logConsole');
+            const appContainer = document.getElementById('appContainer');
+            
+            // список псевдо-вирусных сообщений (эффект активности)
+            const virusMessages = [
+                "[WORM] > Сканирование сетевых портов...",
+                "[CRYPTO] > AES-256 шифрование документов (Documents/)",
+                "[INFO] > Обход UAC... Успешно",
+                "[!] Копирование данных на внешний сервер [!]",
+                "[SYSTEM] > Отключен Windows Defender",
+                "[ROOTKIT] > Внедрение в ядро системы",
+                "[RANSOM] > Файлы помечены: .encrypted",
+                "[NET] > Установка соединения с C&C сервером 45.33.*.*",
+                "[MEM] > Дамп паролей из памяти браузера",
+                "[STEAL] > Извлечение cookies / сессий",
+                "[DANGER] > Удаление теневых копий томов",
+                "[FUD] > Обход антивирусных сигнатур",
+                "[USB] > Распространение на съемные носители",
+                "[MUTEX] > Создан мьютекс для единственной копии",
+                "[SCHTASKS] > Добавлена задача автозапуска при старте",
+                "[FIREWALL] > Правила брандмауэра изменены",
+                "[SYSTEM] > Доступ к камере и микрофону активирован",
+                "[STEAL] > Сбор криптовалютных кошельков",
+                "[RAT] > Удаленное управление: соединение установлено",
+                "[BSOD] > Потенциальная нестабильность системы"
+            ];
+            
+            // функция для добавления лога (сообщение, критический ли тип)
+            function addLogMessage(message, isCritical = false) {
+                if (isFinished) return; // после завершения вируса не пишем новые логи
+                const logDiv = document.createElement('div');
+                logDiv.className = 'log-entry' + (isCritical ? ' critical-entry' : '');
+                // добавим временную метку (псевдо)
+                const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute:'2-digit', second:'2-digit' });
+                logDiv.innerHTML = `[${timestamp}] ${message}`;
+                logConsole.appendChild(logDiv);
+                // автоскролл вниз
+                logConsole.scrollTop = logConsole.scrollHeight;
+                // лимит на количество логов, чтобы не переполнить (но оставим 80+)
+                while(logConsole.children.length > 70) {
+                    logConsole.removeChild(logConsole.firstChild);
+                }
+            }
+            
+            // удалить строку с курсором (последняя строка с анимацией)
+            function removeCursorLine() {
+                const cursorLineElem = document.getElementById('cursorLine');
+                if(cursorLineElem && cursorLineElem.parentNode) {
+                    cursorLineElem.remove();
+                }
+            }
+            
+            // добавить новую строку с мигающим курсором (имитация процесса)
+            function refreshCursorLine(text) {
+                if (isFinished) return;
+                removeCursorLine();
+                const newCursorLine = document.createElement('div');
+                newCursorLine.className = 'log-entry';
+                newCursorLine.id = 'cursorLine';
+                newCursorLine.innerHTML = `${text}<span class="cursor-blink"></span>`;
+                logConsole.appendChild(newCursorLine);
+                logConsole.scrollTop = logConsole.scrollHeight;
+            }
+            
+            // обновление прогресса и таймера
+            function updateUI() {
+                if (isFinished) return;
+                // обновляем таймер
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // прогресс: от 0 до 100% за 60 сек
+                const percent = ((60 - timeLeft) / 60) * 100;
+                const currentPercent = Math.min(100, Math.max(0, percent));
+                progressFill.style.width = `${currentPercent}%`;
+                percentSpan.innerText = `${Math.floor(currentPercent)}%`;
+                
+                // дополнительные эффекты по достижении порогов
+                if (currentPercent >= 30 && currentPercent < 32) {
+                    addLogMessage("[!] Обнаружена попытка восстановления! Блокировка защитника...", true);
+                }
+                if (currentPercent >= 70 && currentPercent < 72) {
+                    addLogMessage("[CRITICAL] Удаление резервных копий. Восстановление невозможно.", true);
+                    // усилить тряску
+                    document.body.classList.add('shake-active');
+                    setTimeout(() => {
+                        if(!isFinished) document.body.classList.remove('shake-active');
+                    }, 3000);
+                }
+                if (currentPercent >= 90 && currentPercent < 92) {
+                    addLogMessage("[SYSTEM] СИСТЕМА ПАРАЛИЗОВАНА! 10 секунд до активации главного вектора", true);
+                }
+            }
+            
+            // функция генерации случайных сообщений каждые 2-3 секунды
+            function startRandomLogs() {
+                if (logInterval) clearInterval(logInterval);
+                logInterval = setInterval(() => {
+                    if (isFinished) return;
+                    // выбираем случайное сообщение
+                    const randomMsg = virusMessages[Math.floor(Math.random() * virusMessages.length)];
+                    // иногда критическое (вероятность 20%)
+                    const isCritical = Math.random() < 0.2;
+                    addLogMessage(randomMsg, isCritical);
+                    // меняем строку-статус курсора на "процесс выполнения"
+                    const fakeProcesses = [
+                        "Выполняется инъекция кода...",
+                        "Извлечение дампа LSASS...",
+                        "Обход DEP / ASLR...",
+                        "Загрузка дополнительных модулей...",
+                        "Маскировка процессов...",
+                        "Сканирование локальных дисков...",
+                        "Сбор системной информации...",
+                        "Установка персистентности..."
+                    ];
+                    const randStatus = fakeProcesses[Math.floor(Math.random() * fakeProcesses.length)];
+                    refreshCursorLine(`[PROCESS] ${randStatus} `);
+                }, 2200);
+            }
+            
+            // Эффект дрожания экрана в последние секунды
+            function startShakingEffect() {
+                if (shakeInterval) clearInterval(shakeInterval);
+                shakeInterval = setInterval(() => {
+                    if (isFinished) return;
+                    if (timeLeft <= 10 && timeLeft > 0) {
+                        // сильная тряска при последних 10 секундах
+                        document.body.classList.add('shake-active');
+                        setTimeout(() => {
+                            if (!isFinished) document.body.classList.remove('shake-active');
+                        }, 200);
+                        // иногда мигаем красным фоном на теле
+                        if (timeLeft % 2 === 0) {
+                            document.body.style.backgroundColor = '#330000';
+                            setTimeout(() => { if(!isFinished) document.body.style.backgroundColor = ''; }, 150);
+                        }
+                    } else if (timeLeft <= 20 && timeLeft > 10) {
+                        // легкая вибрация
+                        if (Math.random() > 0.6) {
+                            document.body.classList.add('shake-active');
+                            setTimeout(() => { if(!isFinished) document.body.classList.remove('shake-active'); }, 100);
+                        }
+                    }
+                }, 800);
+            }
+            
+            // финальная стадия: показать оверлей "вирус активирован"
+            function showFinalScreen() {
+                if (isFinished) return;
+                isFinished = true;
+                // остановка всех интервалов
+                if (intervalId) clearInterval(intervalId);
+                if (logInterval) clearInterval(logInterval);
+                if (shakeInterval) clearInterval(shakeInterval);
+                
+                // убираем класс тряски
+                document.body.classList.remove('shake-active');
+                
+                // удаляем строку курсора, чтобы не мешала
+                removeCursorLine();
+                
+                // добавляем финальные сообщения в лог (ещё успеем)
+                addLogMessage("[SYSTEM] >>> ВРЕМЯ ИСТЕКЛО. ВИРУС АКТИВИРОВАН <<<", true);
+                addLogMessage("[DESTRUCTION] Удаление загрузочных записей (MBR)...", true);
+                addLogMessage("[DESTRUCTION] Все данные зашифрованы. Ключ дешифрования удален.", true);
+                
+                // затемнение контейнера и показ кастомного модального окна
+                const overlay = document.createElement('div');
+                overlay.className = 'final-message';
+                overlay.innerHTML = `
+                    <h1>💀 SYSTEM COMPROMISED 💀</h1>
+                    <p>⚠️ ВАШ КОМПЬЮТЕР ЗАРАЖЕН ⚠️<br>
+                    Все данные зашифрованы. Доступ заблокирован.<br>
+                    Вирус "Blackout RAT" успешно внедрен в систему.</p>
+                    <div class="restart-hint" id="restartButton">🔄 ПЕРЕЗАГРУЗИТЬ (СБРОС) 🔄</div>
+                    <p style="font-size: 0.7rem; margin-top: 20px;">* Это демонстрационный эффект. Никакие данные не пострадали.</p>
+                `;
+                document.body.appendChild(overlay);
+                
+                // добавляем событие на кнопку перезагрузки страницы (имитация "восстановления")
+                const restartBtn = document.getElementById('restartButton');
+                if (restartBtn) {
+                    restartBtn.addEventListener('click', () => {
+                        location.reload();
+                    });
+                }
+                
+                // блокируем возможность нажатия на фон
+                appContainer.style.pointerEvents = 'none';
+                appContainer.style.filter = 'blur(2px)';
+                
+                // добавляем бесконечный звук? (не будем, чтобы не нарушать политику)
+                // но для усиления эффекта - добавим мигание заголовка страницы
+                let originalTitle = document.title;
+                let titleInterval = setInterval(() => {
+                    if (!document.hidden) {
+                        document.title = document.title === '💀 ЗАРАЖЕНО 💀' ? '⚠️ ВИРУС АКТИВЕН ⚠️' : '💀 ЗАРАЖЕНО 💀';
+                    }
+                }, 600);
+                // сохраним интервал, но при перезагрузке он исчезнет, а пока оставим
+                window.titleInterval = titleInterval;
+            }
+            
+            // Основной таймер обратного отсчета
+            function startTimer() {
+                if (intervalId) clearInterval(intervalId);
+                intervalId = setInterval(() => {
+                    if (isFinished) return;
+                    if (timeLeft <= 1) {
+                        // время вышло
+                        timeLeft = 0;
+                        updateUI();
+                        clearInterval(intervalId);
+                        intervalId = null;
+                        // Завершение: запускаем финал
+                        showFinalScreen();
+                    } else {
+                        timeLeft--;
+                        updateUI();
+                        
+                        // дополнительные спец-сообщения при критических отметках
+                        if (timeLeft === 45) {
+                            addLogMessage("[WARNING] Отключение восстановления системы...", true);
+                        }
+                        if (timeLeft === 30) {
+                            addLogMessage("[CRITICAL] Обнаружены бэкапы в облаке. Удаление...", true);
+                        }
+                        if (timeLeft === 15) {
+                            addLogMessage("[SYSTEM] Активация механизма самоуничтожения данных через 15 сек", true);
+                            refreshCursorLine("[ALERT] ОСТАЛОСЬ 15 СЕКУНД ДО НЕОБРАТИМЫХ ИЗМЕНЕНИЙ ");
+                        }
+                        if (timeLeft === 10) {
+                            addLogMessage("[!] 10 секунд до полной компрометации [!]", true);
+                            refreshCursorLine("[PANIC] Система потеряна! 10..9..8..");
+                        }
+                        if (timeLeft === 5) {
+                            addLogMessage("[!!!] 5 СЕКУНД. НЕ ВЫКЛЮЧАЙТЕ КОМПЬЮТЕР", true);
+                        }
+                        if (timeLeft === 3) {
+                            addLogMessage("[FINAL] 3... 2... 1...", true);
+                        }
+                    }
+                }, 1000);
+            }
+            
+            // добавление начальных пары эффектов и дополнительных событий
+            function initVirusSimulation() {
+                startTimer();
+                startRandomLogs();
+                startShakingEffect();
+                
+                // добавим пару начальных сообщений и заменим курсор
+                setTimeout(() => {
+                    if (!isFinished) {
+                        addLogMessage("[NET] Подключение к Tor сети... Анонимизация трафика");
+                        refreshCursorLine("[ACTIVE] Загрузка вирусной нагрузки...");
+                    }
+                }, 1500);
+                setTimeout(() => {
+                    if (!isFinished) {
+                        addLogMessage("[RUNTIME] Внедрение в процесс explorer.exe");
+                    }
+                }, 4000);
+                setTimeout(() => {
+                    if (!isFinished) {
+                        addLogMessage("[KEYLOGGER] Запись нажатий клавиш активирована", true);
+                    }
+                }, 8000);
+                // блокировка правой кнопки мыши для "жуткого" эффекта
+                document.addEventListener('contextmenu', (e) => {
+                    if (!isFinished) {
+                        e.preventDefault();
+                        addLogMessage("[BLOCK] Попытка вызова контекстного меню заблокирована", false);
+                        return false;
+                    }
+                });
+                // запрет выделения на всякий случай
+                document.addEventListener('selectstart', (e) => {
+                    if (!isFinished && e.target.tagName !== 'INPUT') e.preventDefault();
+                });
+            }
+            
+            // старт симуляции
+            initVirusSimulation();
+        })();
+    </script>
+</body>
+  </html> 
