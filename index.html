@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Готовое задание</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #1d1d1f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+            border: 1px solid #f2f2f2;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.5px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 400;
+            color: #86868b;
+            margin: 0 0 30px 0;
+        }
+
+        .code-wrapper {
+            position: relative;
+            background-color: #f5f5f7;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #d2d2d7;
+        }
+
+        pre {
+            margin: 0;
+            padding: 20px;
+            max-height: 400px;
+            overflow: auto;
+            font-family: "SF Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+            tab-size: 4;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #0071e3;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .copy-button:hover {
+            background-color: #0077ed;
+        }
+
+        .copy-button:active {
+            transform: scale(0.96);
+        }
+
+        .copy-button.success {
+            background-color: #34c759;
+        }
+
+        pre::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        pre::-webkit-scrollbar-track {
+            background: #f5f5f7;
+        }
+        pre::-webkit-scrollbar-thumb {
+            background: #d2d2d7;
+            border-radius: 4px;
+        }
+        pre::-webkit-scrollbar-thumb:hover {
+            background: #86868b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Готовое задание, коллеги!</h1>
+    <h2>Задание номер 3</h2>
+
+    <div class="code-wrapper">
+        <button class="copy-button" onclick="copyCode(this)">Копировать код</button>
+<pre id="htmlCode">&lt;!DOCTYPE html&gt;
+&lt;html lang="ru"&gt;
+&lt;head&gt;
+&lt;meta charset="UTF-8"&gt;
+&lt;title&gt;Животный мир африканской саванны&lt;/title&gt;
+&lt;/head&gt;
+&lt;body bgcolor="#FFFFE0" text="#000000"&gt;
+&lt;font face="Times New Roman" size="3"&gt;
+&lt;h1&gt;Животный мир африканской саванны&lt;/h1&gt;
+&lt;p align="justify"&gt;
+&lt;b&gt;Африканская саванна — это обширное биомное пространство с жарким климатом,
+характеризующееся редкими деревьями и доминированием трав. Это дом для одного
+из самых богатых животных сообществ на планете, включая легендарную "большую
+пятерку": льва, слона, буйвола, леопарда и носорога. Животные здесь выживают
+благодаря уникальным адаптациям к чередованию сезонов дождей и засухи. Однако
+этот хрупкий мир находится под угрозой из-за деятельности человека и климатических
+изменений.&lt;/b&gt;
+&lt;/p&gt;
+&lt;h2&gt;Уникальные обитатели саванны&lt;/h2&gt;
+&lt;p align="justify"&gt;
+&lt;i&gt;Многие животные саванны развили специализированные адаптации для выживания.
+Например, жирафы имеют длинную шею, чтобы доставать до самых высоких листьев
+акации, которые недоступны другим травоядным. Слон использует свой хобот как
+многофункциональный инструмент для еды, питья и общения. Все обитатели саванны
+тесно связаны друг с другом в сложной экосистеме.&lt;/i&gt;
+&lt;br&gt;
+&lt;img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/African_Elephant_%28Loxodonta_africana%29_in_Tarangire_National_Park%2C_Tanzania.jpg" alt="Слон в саванне" width="250" border="0"&gt;
+&lt;/p&gt;
+&lt;h3&gt;Хищники и их роль&lt;/h3&gt;
+&lt;p align="justify"&gt;
+Хищники играют ключевую роль в поддержании баланса экосистемы саванны,
+контролируя популяции травоядных. Львы — самые известные кошки региона,
+охотящиеся на зебр, антилоп гну и буйволов. В то же время гиены и стервятники
+выполняют важную функцию санитаров, утилизируя останки. Удачная охота часто требует
+командной работы, особенно для прайдов львов. Каждый хищник занимает свою нишу,
+чтобы минимизировать конкуренцию.
+&lt;br&gt;
+&lt;img src="https://upload.wikimedia.org/wikipedia/commons/7/73/Lion_waiting_in_Namutoni.jpg" alt="Лев в высокой траве" width="250" border="0"&gt;
+&lt;/p&gt;
+&lt;h4&gt;Размножение и потомство&lt;/h4&gt;
+&lt;p align="justify"&gt;
+&lt;font color="blue"&gt;
+Семьи животных в саванне часто ведут кочевой образ жизни. Миграции за стадами
+травоядных обязательны для выживания. У многих видов период размножения
+приурочен к началу сезона дождей, когда еды становится в изобилии. Забота о
+потомстве — важная часть жизни саванны. Например, у гепардов матери-одиночки
+учат своих детенышей охотиться, часто перемещая их, чтобы защитить от более
+крупных хищников.&lt;/font&gt;
+&lt;br&gt;
+&lt;img src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Grant%27s_Zebra_%28Equus_quagga_boehmi%29_Tarangire.jpg" alt="Зебры в саванне" width="250" border="0"&gt;
+&lt;/p&gt;
+&lt;h5&gt;Угрозы для животных саванны&lt;/h5&gt;
+&lt;p align="justify"&gt;
+&lt;font color="green"&gt;
+Главные угрозы для животных африканской саванны — это браконьерство,
+разрушение среды обитания из-за расширения сельского хозяйства и изменения климата,
+вызывающие более длительные засухи. Чрезмерный выпас скота и незаконная торговля
+частями животных ставят многие виды под угрозу исчезновения. Международные и местные
+природоохранные организации прилагают значительные усилия для защиты этих уникальных
+животных и их среды обитания.&lt;/font&gt;
+&lt;/p&gt;
+&lt;h6&gt;Интересные факты об африканской фауне&lt;/h6&gt;
+&lt;p align="justify"&gt;
+&lt;font color="purple"&gt;
+Слон — самое крупное наземное животное на Земле. При беге по саванне леопард может
+развивать скорость до 60 км/ч. Уникальный узор на шкуре каждого животного служит
+ему камуфляжем. Жирафы спят всего от 10 минут до двух часов в день. Взрослый лев
+может спать до 20 часов в сутки. Взрослый самец жирафа достигает высоты до 6 метров
+и веса до 1900 кг.&lt;/font&gt;
+&lt;/p&gt;
+&lt;/font&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+    </div>
+</div>
+
+<script>
+    function copyCode(button) {
+        const code = document.getElementById('htmlCode').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            button.innerText = 'Скопировано!';
+            button.classList.add('success');
+            
+            setTimeout(() => {
+                button.innerText = 'Копировать код';
+                button.classList.remove('success');
+            }, 2000);
+        }).catch(err => {
+            console.error('Ошибка копирования: ', err);
+            alert('Не удалось скопировать код.');
+        });
+    }
+</script>
+
+</body>
+</html>
