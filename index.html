@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Готовое задание</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #1d1d1f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            padding: 40px;
+            border: 1px solid #efefef;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.5px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 400;
+            color: #86868b;
+            margin: 0 0 30px 0;
+        }
+
+        .code-wrapper {
+            position: relative;
+            background-color: #f5f5f7;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #d2d2d7;
+        }
+
+        pre {
+            margin: 0;
+            padding: 25px;
+            max-height: 450px;
+            overflow: auto;
+            font-family: "SF Mono", "SFMono-Regular", Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #333;
+            tab-size: 4;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #0071e3;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .copy-button:hover {
+            background-color: #0077ed;
+        }
+
+        .copy-button.loading {
+            background-color: #86868b;
+            cursor: wait;
+        }
+
+        .copy-button.success {
+            background-color: #34c759;
+        }
+
+        /* Спиннер загрузки */
+        .spinner {
+            display: none;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .copy-button.loading .spinner {
+            display: inline-block;
+        }
+
+        /* Скроллбар */
+        pre::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        pre::-webkit-scrollbar-track {
+            background: #f5f5f7;
+        }
+        pre::-webkit-scrollbar-thumb {
+            background: #d2d2d7;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Готовое задание, коллеги!</h1>
+    <h2>Задание номер 2</h2>
+
+    <div class="code-wrapper">
+        <button class="copy-button" id="copyBtn" onclick="handleCopy()">
+            <span class="spinner"></span>
+            <span id="btnText">Копировать код</span>
+        </button>
+<pre id="htmlCode">&lt;!DOCTYPE html&gt;
+&lt;html lang="ru"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Животный мир африканской саванны&lt;/title&gt;
+&lt;/head&gt;
+&lt;body bgcolor="#FFFFE0" text="#000000"&gt;
+    &lt;font face="Times New Roman" size="3"&gt;
+        &lt;h1&gt;Животный мир африканской саванны&lt;/h1&gt;
+        &lt;p align="justify"&gt;
+            &lt;b&gt;Африканская саванна — это уникальная экосистема, расположенная в тропическом поясе. 
+            Она представляет собой бескрайние травянистые равнины с редкими группами деревьев, такими как акации и баобабы. 
+            Здесь обитают самые крупные млекопитающие планеты, выживающие в условиях резкой смены сезонов. 
+            Саванна играет важнейшую роль в поддержании биологического разнообразия Земли.&lt;/b&gt;
+        &lt;/p&gt;
+
+        &lt;h2&gt;Гиганты суши: Африканские слоны&lt;/h2&gt;
+        &lt;p align="justify"&gt;
+            &lt;i&gt;Африканские слоны являются крупнейшими наземными животными. Их огромные уши помогают регулировать температуру тела 
+            в условиях палящего зноя, а хобот служит уникальным органом для питания и общения. Слоны живут сложными социальными 
+            группами и способны проявлять глубокие эмоции. Они ежедневно преодолевают десятки километров в поисках воды и пищи.&lt;/i&gt;
+            &lt;br&gt;
+            &lt;img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/African_Elephant_%28Loxodonta_africana%29_in_Tarangire_National_Park%2C_Tanzania.jpg/640px-African_Elephant_%28Loxodonta_africana%29_in_Tarangire_National_Park%2C_Tanzania.jpg" 
+                 alt="Африканский слон" width="250" border="0"&gt;
+        &lt;/p&gt;
+
+        &lt;h3&gt;Царь зверей и его прайд&lt;/h3&gt;
+        &lt;p align="justify"&gt;
+            Львы — единственные кошки, живущие группами (прайдами). В саванне они занимают вершину пищевой цепочки. 
+            Основная роль в охоте принадлежит самкам, в то время как самцы охраняют территорию. Мощный рык льва 
+            слышен на расстоянии до 8 километров, что помогает обозначать границы своих владений.
+            &lt;br&gt;
+            &lt;img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Lion_waiting_in_Namutoni.jpg/640px-Lion_waiting_in_Namutoni.jpg" 
+                 alt="Лев в саванне" width="250" border="0"&gt;
+        &lt;/p&gt;
+
+        &lt;h4&gt;Жизнь в движении: Зебры&lt;/h4&gt;
+        &lt;p align="justify"&gt;
+            &lt;font color="blue"&gt;
+            Полосатый узор каждой зебры уникален, как отпечатки пальцев человека. Эти животные постоянно мигрируют 
+            в поисках свежих пастбищ. Полосы служат отличной маскировкой от хищников, создавая оптическую иллюзию 
+            при движении в стаде. Зебры очень выносливы и могут пробегать огромные расстояния по засушливой местности.
+            &lt;/font&gt;
+            &lt;br&gt;
+            &lt;img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Grant%27s_Zebra_%28Equus_quagga_boehmi%29_Tarangire.jpg/640px-Grant%27s_Zebra_%28Equus_quagga_boehmi%29_Tarangire.jpg" 
+                 alt="Зебры на водопое" width="250" border="0"&gt;
+        &lt;/p&gt;
+
+        &lt;h5&gt;Сохранение природы&lt;/h5&gt;
+        &lt;p align="justify"&gt;
+            &lt;font color="green"&gt;
+            Биом саванны нуждается в защите от браконьерства и расширения сельскохозяйственных угодий. 
+            Создание национальных парков позволяет сохранить популяцию редких видов животных в их естественной среде.
+            &lt;/font&gt;
+        &lt;/p&gt;
+
+        &lt;h6&gt;Интересные факты&lt;/h6&gt;
+        &lt;p align="justify"&gt;
+            &lt;font color="purple"&gt;
+            Гепард, обитающий в саванне, развивает скорость до 110 км/ч за несколько секунд. 
+            Язык жирафа может достигать 50 см в длину, что позволяет ему обходить острые шипы акации. 
+            Баобабы могут жить тысячи лет, запасая в своих стволах огромные объемы воды.
+            &lt;/font&gt;
+        &lt;/p&gt;
+    &lt;/font&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+    </div>
+</div>
+
+<script>
+    function handleCopy() {
+        const btn = document.getElementById('copyBtn');
+        const btnText = document.getElementById('btnText');
+        const code = document.getElementById('htmlCode').innerText;
+
+        // Визуальное начало загрузки
+        btn.disabled = true;
+        btn.classList.add('loading');
+        btnText.innerText = 'Копирование...';
+
+        // Таймер на 5 секунд (5000 миллисекунд)
+        setTimeout(() => {
+            navigator.clipboard.writeText(code).then(() => {
+                // Успешное завершение
+                btn.classList.remove('loading');
+                btn.classList.add('success');
+                btnText.innerText = 'Скопировано!';
+
+                // Возврат кнопки в исходное состояние через 3 секунды
+                setTimeout(() => {
+                    btn.classList.remove('success');
+                    btn.disabled = false;
+                    btnText.innerText = 'Копировать код';
+                }, 3000);
+            }).catch(err => {
+                console.error('Ошибка:', err);
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                btnText.innerText = 'Ошибка';
+            });
+        }, 5000);
+    }
+</script>
+
+</body>
+</html>
