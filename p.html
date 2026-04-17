@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Та самая РЕШОБА - Код для заданий</title>
+    <style>
+        /* Базовые стили и современный минимализм */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+        }
+
+        /* Экран загрузки */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        #loader h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: #1d1d1f;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.98); opacity: 0.8; }
+            50% { transform: scale(1.02); opacity: 1; }
+            100% { transform: scale(0.98); opacity: 0.8; }
+        }
+
+        /* Основной контент */
+        #main-content {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease 0.2s, visibility 0.8s;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #1d1d1f;
+        }
+
+        p.description {
+            color: #86868b;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        /* Красивое окно с кодом */
+        .code-window {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            margin-bottom: 50px;
+            overflow: hidden;
+            border: 1px solid #e5e5ea;
+        }
+
+        .code-header {
+            background: #fbfbfd;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e5ea;
+        }
+
+        .mac-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .mac-dots span {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background-color: #ff5f56; }
+        .dot-yellow { background-color: #ffbd2e; }
+        .dot-green { background-color: #27c93f; }
+
+        .copy-btn {
+            background-color: #007aff;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .copy-btn:hover {
+            background-color: #005bb5;
+        }
+
+        .copy-btn:active {
+            transform: scale(0.96);
+        }
+
+        pre {
+            margin: 0;
+            padding: 20px;
+            overflow-x: auto;
+            background-color: #ffffff;
+        }
+
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333333;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <h1>Та самая РЕШОБА</h1>
+    </div>
+
+    <div id="main-content">
+        
+        <h2>Задание 1: Точная копия исходного кода</h2>
+        <p class="description">Код со страниц 1-3 в точности переписан для копирования.</p>
+        
+        <div class="code-window">
+            <div class="code-header">
+                <div class="mac-dots">
+                    <span class="dot-red"></span>
+                    <span class="dot-yellow"></span>
+                    <span class="dot-green"></span>
+                </div>
+                <button class="copy-btn" onclick="copyCode(this, 'code-task-1')">Скопировать код</button>
+            </div>
+            <pre><code id="code-task-1">&lt;!DOCTYPE html&gt;
+&lt;html lang="ru"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Удивительный животный мир Мадагаскара&lt;/title&gt;
+&lt;/head&gt;
+&lt;body bgcolor="#CCFFCC"&gt; &lt;!-- светло-зеленый фон --&gt;
+  &lt;!-- Заголовок: красный цвет, выравнивание по центру --&gt;
+  &lt;h1 align="center"&gt;&lt;font color="red"&gt;Удивительный животный мир Мадагаскара&lt;/font&gt;&lt;/h1&gt;
+  &lt;!-- Абзац 1 с картинкой --&gt;
+  &lt;p align="justify"&gt;
+    &lt;img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Lemur_%2836254437184%29.jpg/330px-Lemur_%2836254437184%29.jpg" alt="Кольцехвостый лемур" width="400" hspace="10" align="left"&gt;
+    Мадагаскар – дом для более чем сотни видов лемуров, которые не встречаются больше нигде на планете.
+    Кольцехвостый лемур, или кошачий лемур, известен своим длинным полосатым хвостом и удивительной социальной структурой.
+    Эти приматы проводят много времени на земле, греясь на солнце в характерной «йога-позе». Лемуры играют ключевую роль
+    в экосистеме острова, распространяя семена многих растений.
+  &lt;/p&gt;
+  &lt;!-- Абзац 2 с картинкой --&gt;
+  &lt;p align="justify"&gt;
+    &lt;img src="https://t4.ftcdn.net/jpg/05/42/22/25/360_F_542222560_QPVl8zLn15swG1FLahx1IJ50LAy5agrI.jpg" alt="Фосса" width="400" hspace="10" align="right"&gt;
+    Главным хищником Мадагаскара является фосса – эндемичное млекопитающее,
+    похожее на помесь кошки и собаки.
+    Фосса обладает стройным телом, длинным хвостом и полувтяжными когтями, что позволяет ей ловко лазать по деревьям.
+    Этот зверь охотится на лемуров, птиц и мелких млекопитающих, занимая нишу, которую на других континентах обычно
+    занимают крупные кошки. К сожалению, фосса находится под угрозой исчезновения из-за потери лесов.
+  &lt;/p&gt;
+  &lt;!-- Абзац 3 (без картинки) --&gt;
+  &lt;p align="justify"&gt;
+    Мадагаскар – рай для хамелеонов. Здесь обитает около половины всех известных видов этих удивительных ящериц.
+    Самый маленький в мире хамелеон, Brookesia micra, достигает всего 3 см в длину и живет только на этом острове.
+    Хамелеоны Мадагаскара поражают разнообразием окрасок, способностью менять цвет и невероятно длинным языком,
+    который выбрасывается на доли секунды для захвата добычи.
+  &lt;/p&gt;
+  &lt;!-- Абзац 4 (без картинки) --&gt;
+  &lt;p align="justify"&gt;
+    Кроме лемуров и хамелеонов, остров славится другими уникальными существами:
+    фантастическими гекконами-листохвостами,
+    которые идеально маскируются под кору деревьев, а также забавными тенреками –
+    колючими насекомоядными, внешне напоминающими ежей.
+    Огромное количество видов растений и животных Мадагаскара – эндемики, то есть
+    они не встречаются больше нигде на Земле.
+    Сохранение этой хрупкой экосистемы – одна из главных задач современной биологии.
+  &lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div>
+
+        <h2>Задание 2 (Задание 4): Удивительные насекомые Мадагаскара</h2>
+        <p class="description">Код написан по образцу. Тематика — насекомые Мадагаскара (Сатурния комета, шипящий таракан, жук-жираф). Добавлены рабочие ссылки на картинки, применены нужные атрибуты (width, hspace, align, font, bgcolor).</p>
+
+        <div class="code-window">
+            <div class="code-header">
+                <div class="mac-dots">
+                    <span class="dot-red"></span>
+                    <span class="dot-yellow"></span>
+                    <span class="dot-green"></span>
+                </div>
+                <button class="copy-btn" onclick="copyCode(this, 'code-task-2')">Скопировать код</button>
+            </div>
+            <pre><code id="code-task-2">&lt;!DOCTYPE html&gt;
+&lt;html lang="ru"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Удивительные насекомые Мадагаскара&lt;/title&gt;
+&lt;/head&gt;
+&lt;body bgcolor="#FFFACD"&gt; &lt;!-- светло-желтый фон --&gt;
+  &lt;!-- Заголовок --&gt;
+  &lt;h1 align="center"&gt;&lt;font color="#2E8B57"&gt;Удивительные насекомые Мадагаскара&lt;/font&gt;&lt;/h1&gt;
+  
+  &lt;!-- Абзац 1 с картинкой (Слева) --&gt;
+  &lt;p align="justify"&gt;
+    &lt;img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Argema_mittrei_1.jpg/320px-Argema_mittrei_1.jpg" alt="Сатурния комета" width="300" hspace="10" align="left"&gt;
+    Остров Мадагаскар славится не только лемурами, но и своими уникальными насекомыми. Одно из самых впечатляющих созданий — это Сатурния комета, или мадагаскарская лунная моль. Это одна из самых крупных бабочек в мире.
+    Ее размах крыльев может достигать 20 сантиметров, а на нижних крыльях расположены длинные изящные «хвосты», вырастающие до 15 сантиметров. Жизнь этой прекрасной бабочки длится всего несколько дней.
+  &lt;/p&gt;
+
+  &lt;!-- Абзац 2 с картинкой (Справа) --&gt;
+  &lt;p align="justify"&gt;
+    &lt;img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Gromphadorhina_portentosa_%28Madagascar_hissing_cockroach%29.jpg/320px-Gromphadorhina_portentosa_%28Madagascar_hissing_cockroach%29.jpg" alt="Мадагаскарский шипящий таракан" width="300" hspace="10" align="right"&gt;
+    Еще один известный на весь мир эндемик — мадагаскарский шипящий таракан. В отличие от большинства других видов, у него совершенно нет крыльев, зато он обладает уникальной способностью издавать громкий шипящий звук.
+    Насекомые делают это в моменты опасности, с силой выталкивая воздух через дыхальца. Эти безобидные гиганты обитают в лесной подстилке и питаются опавшими листьями.
+  &lt;/p&gt;
+
+  &lt;!-- Абзац 3 с картинкой (Слева) --&gt;
+  &lt;p align="justify"&gt;
+    &lt;img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Giraffe_weevil_%28Trachelophorus_giraffa%29_male.jpg/320px-Giraffe_weevil_%28Trachelophorus_giraffa%29_male.jpg" alt="Жук-жираф" width="300" hspace="10" align="left"&gt;
+    Жук-жираф (Trachelophorus giraffa) — еще одно поразительное насекомое. Он получил свое название благодаря необычайно длинной шее, которая особенно ярко выражена у самцов и служит им для турниров.
+    Самки же используют свою более короткую шею как инструмент: они мастерски сворачивают листья деревьев в аккуратные трубочки, создавая надежную колыбель для откладывания яиц.
+  &lt;/p&gt;
+
+  &lt;!-- Абзац 4 (без картинки) --&gt;
+  &lt;p align="justify"&gt;
+    Энтомофауна Мадагаскара насчитывает десятки тысяч видов, большинство из которых эндемичны и не встречаются больше нигде. От крошечных муравьев до гигантских палочников — насекомые этого изолированного острова демонстрируют невероятное разнообразие форм.
+    Изучение и сохранение этих хрупких созданий помогает ученым лучше понять процессы эволюции.
+  &lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div>
+    </div>
+
+    <script>
+        // Логика загрузочного экрана (5 секунд)
+        window.addEventListener('DOMContentLoaded', () => {
+            const loader = document.getElementById('loader');
+            const content = document.getElementById('main-content');
+            
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.visibility = 'hidden';
+                    content.style.visibility = 'visible';
+                    content.style.opacity = '1';
+                }, 500); // Ждем окончания анимации исчезновения
+            }, 5000); // 5 секунд белого экрана
+        });
+
+        // Функция копирования кода
+        function copyCode(button, elementId) {
+            const codeElement = document.getElementById(elementId);
+            const textToCopy = codeElement.innerText || codeElement.textContent;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = button.innerText;
+                const originalColor = button.style.backgroundColor;
+                
+                button.innerText = 'Скопировано!';
+                button.style.backgroundColor = '#34c759'; // Зеленый цвет успеха
+                
+                setTimeout(() => {
+                    button.innerText = originalText;
+                    button.style.backgroundColor = ''; // Возврат к CSS по умолчанию
+                }, 2000);
+            }).catch(err => {
+                console.error('Ошибка копирования: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
