@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pure Code — Лабораторная работа (Списки)</title>
+    <style>
+        :root {
+            --bg: #f5f5f7;
+            --card-bg: #ffffff;
+            --accent: #0071e3;
+            --text: #1d1d1f;
+            --code-bg: #1e1e1e;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        header h1 {
+            font-size: 40px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #86868b;
+            font-size: 19px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 22px;
+            border-left: 4px solid var(--accent);
+            padding-left: 15px;
+        }
+
+        .preview {
+            background: #fafafa;
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: "SF Mono", "Fira Code", monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .btn-copy {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            font-size: 15px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-copy:hover {
+            opacity: 0.9;
+        }
+
+        .copy-success {
+            background: #28a745 !important;
+        }
+
+        footer {
+            margin-top: 60px;
+            color: #86868b;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>HTML Solutions</h1>
+    <p>Чистый код для лабораторных работ по спискам</p>
+</header>
+
+<div class="grid">
+    <div class="card">
+        <h2>Задание 1. Список учащихся</h2>
+        <div class="preview">
+            <ul>
+                <li>Никита — Веб-разработка</li>
+                <li>Александр — Геймдизайн</li>
+                <li>Ольга — Маркетинг</li>
+            </ul>
+        </div>
+        <pre id="code1">&lt;ul&gt;
+    &lt;li&gt;Никита — Веб-разработка&lt;/li&gt;
+    &lt;li&gt;Александр — Геймдизайн&lt;/li&gt;
+    &lt;li&gt;Ольга — Маркетинг&lt;/li&gt;
+&lt;/ul&gt;</pre>
+        <button class="btn-copy" onclick="copy('code1', this)">Копировать код</button>
+    </div>
+
+    <div class="card">
+        <h2>Задание 2. Путь в колледж (12 позиций)</h2>
+        <pre id="code2">&lt;ol&gt;
+    &lt;li&gt;Проснуться в 7:00&lt;/li&gt;
+    &lt;li&gt;Сделать зарядку&lt;/li&gt;
+    &lt;li&gt;Принять душ&lt;/li&gt;
+    &lt;li&gt;Позавтракать&lt;/li&gt;
+    &lt;li&gt;Собрать рюкзак и MacBook&lt;/li&gt;
+    &lt;li&gt;Надеть куртку&lt;/li&gt;
+    &lt;li&gt;Закрыть квартиру&lt;/li&gt;
+    &lt;li&gt;Спуститься на лифте&lt;/li&gt;
+    &lt;li&gt;Дойти до остановки&lt;/li&gt;
+    &lt;li&gt;Сесть в автобус&lt;/li&gt;
+    &lt;li&gt;Доехать до нужной улицы&lt;/li&gt;
+    &lt;li&gt;Зайти в холл колледжа&lt;/li&gt;
+&lt;/ol&gt;</pre>
+        <button class="btn-copy" onclick="copy('code2', this)">Копировать код</button>
+    </div>
+
+    <div class="card">
+        <h2>Задание 3. Режим дня (15 позиций)</h2>
+        <pre id="code3">&lt;dl&gt;
+    &lt;dt&gt;07:00&lt;/dt&gt; &lt;dd&gt;Подъем и начало дня&lt;/dd&gt;
+    &lt;dt&gt;07:30&lt;/dt&gt; &lt;dd&gt;Завтрак и кофе&lt;/dd&gt;
+    &lt;dt&gt;08:15&lt;/dt&gt; &lt;dd&gt;Выход из дома&lt;/dd&gt;
+    &lt;dt&gt;09:00&lt;/dt&gt; &lt;dd&gt;Первая учебная пара&lt;/dd&gt;
+    &lt;dt&gt;10:40&lt;/dt&gt; &lt;dd&gt;Вторая учебная пара&lt;/dd&gt;
+    &lt;dt&gt;12:10&lt;/dt&gt; &lt;dd&gt;Перерыв на обед&lt;/dd&gt;
+    &lt;dt&gt;12:50&lt;/dt&gt; &lt;dd&gt;Третья учебная пара&lt;/dd&gt;
+    &lt;dt&gt;14:30&lt;/dt&gt; &lt;dd&gt;Четвертая учебная пара&lt;/dd&gt;
+    &lt;dt&gt;16:00&lt;/dt&gt; &lt;dd&gt;Окончание занятий&lt;/dd&gt;
+    &lt;dt&gt;17:00&lt;/dt&gt; &lt;dd&gt;Работа над проектами&lt;/dd&gt;
+    &lt;dt&gt;19:00&lt;/dt&gt; &lt;dd&gt;Ужин в кругу семьи&lt;/dd&gt;
+    &lt;dt&gt;20:00&lt;/dt&gt; &lt;dd&gt;Программирование (Pure Code)&lt;/dd&gt;
+    &lt;dt&gt;21:30&lt;/dt&gt; &lt;dd&gt;Изучение польского языка&lt;/dd&gt;
+    &lt;dt&gt;22:30&lt;/dt&gt; &lt;dd&gt;Подготовка ко сну&lt;/dd&gt;
+    &lt;dt&gt;23:00&lt;/dt&gt; &lt;dd&gt;Сон&lt;/dd&gt;
+&lt;/dl&gt;</pre>
+        <button class="btn-copy" onclick="copy('code3', this)">Копировать код</button>
+    </div>
+
+    <div class="card">
+        <h2>Задание 4. Вложенный список (Животные) + Фото</h2>
+        <pre id="code4">&lt;h3&gt;Дикие животные: Волк&lt;/h3&gt;
+&lt;ul&gt;
+    &lt;li&gt;Характеристики
+        &lt;ul&gt;
+            &lt;li&gt;Окрас: Серый&lt;/li&gt;
+            &lt;li&gt;Среда обитания: Леса&lt;/li&gt;
+        &lt;/ul&gt;
+    &lt;/li&gt;
+    &lt;li&gt;Питание: Хищник&lt;/li&gt;
+&lt;/ul&gt;
+&lt;img src="https://via.placeholder.com/300" alt="Волк"&gt;</pre>
+        <button class="btn-copy" onclick="copy('code4', this)">Копировать код</button>
+    </div>
+
+    <div class="card">
+        <h2>Задание 5. Мои покупки (15 элементов)</h2>
+        <pre id="code5">&lt;h1&gt;Мои покупки&lt;/h1&gt;
+&lt;ul&gt;
+    &lt;li&gt;Молоко&lt;/li&gt; &lt;li&gt;Хлеб&lt;/li&gt; &lt;li&gt;Яблоки&lt;/li&gt;
+    &lt;li&gt;Сыр&lt;/li&gt; &lt;li&gt;Вода&lt;/li&gt; &lt;li&gt;Сок&lt;/li&gt;
+    &lt;li&gt;Кофе&lt;/li&gt; &lt;li&gt;Чай&lt;/li&gt; &lt;li&gt;Мясо&lt;/li&gt;
+    &lt;li&gt;Паста&lt;/li&gt; &lt;li&gt;Масло&lt;/li&gt; &lt;li&gt;Яйца&lt;/li&gt;
+    &lt;li&gt;Огурцы&lt;/li&gt; &lt;li&gt;Томаты&lt;/li&gt; &lt;li&gt;Печенье&lt;/li&gt;
+&lt;/ul&gt;</pre>
+        <button class="btn-copy" onclick="copy('code5', this)">Копировать код</button>
+    </div>
+
+    <div class="card">
+        <h2>Задание 6. Топ-5 фильмов</h2>
+        <pre id="code6">&lt;h2&gt;Топ-5 лучших фильмов&lt;/h2&gt;
+&lt;ol&gt;
+    &lt;li&gt;Интерстеллар&lt;/li&gt;
+    &lt;li&gt;Начало&lt;/li&gt;
+    &lt;li&gt;Матрица&lt;/li&gt;
+    &lt;li&gt;Зеленая миля&lt;/li&gt;
+    &lt;li&gt;Темный рыцарь&lt;/li&gt;
+&lt;/ol&gt;</pre>
+        <button class="btn-copy" onclick="copy('code6', this)">Копировать код</button>
+    </div>
+</div>
+
+<footer>
+    &copy; 2026 LegalTech & Dev Solutions
+</footer>
+
+<script>
+    function copy(id, btn) {
+        const text = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = btn.innerText;
+            btn.innerText = 'Скопировано!';
+            btn.classList.add('copy-success');
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.classList.remove('copy-success');
+            }, 2000);
+        });
+    }
+</script>
+
+</body>
+</html>
