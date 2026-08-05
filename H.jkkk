@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>StudyBox VR Класс</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Arial', sans-serif; }
+        #start-btn {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            padding: 20px 40px; font-size: 24px; background: #c7864a; color: white;
+            border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            cursor: pointer; z-index: 100; letter-spacing: 2px;
+        }
+        #loading {
+            position: absolute; top: 20px; left: 0; width: 100%; text-align: center;
+            color: #aaa; font-size: 14px; pointer-events: none; z-index: 50;
+        }
+        /* Скрываем всё, пока не нажата кнопка */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <button id="start-btn">Войти в StudyBox</button>
+    <div id="loading" class="hidden">Поверните телефон, чтобы осмотреться...</div>
+
+    <!-- Импортируем Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { DeviceOrientationControls } from 'three/addons/controls/DeviceOrientationControls.js';
+
+        const startBtn = document.getElementById('start-btn');
+        const loadingEl = document.getElementById('loading');
+
+        startBtn.addEventListener('click', async () => {
+            startBtn.classList.add('hidden');
+            loadingEl.classList.remove('hidden');
+            initVR();
+        });
+
+        function initVR() {
+            // 1. Сцена и камера
+            const scene = new THREE.Scene();
+            // Теплый цвет фона (стены)
+            scene.background = new THREE.Color(0xdfd0c0); 
+
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 1.6, 0); // Рост сидящего человека (1.6м)
+
+            // 2. Рендерер
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2;
+            document.body.appendChild(renderer.domElement);
+
+            // 3. Управление гироскопом (VR взгляд)
+            const controls = new DeviceOrientationControls(camera);
+            controls.connect();
+            controls.update();
+
+            // 4. Освещение (Тёплое!)
+            // Мягкий теплый свет из окна/ламп
+            const warmLight = new THREE.DirectionalLight(0xffdbb5, 1.5);
+            warmLight.position.set(2, 3, 4);
+            warmLight.castShadow = true;
+            scene.add(warmLight);
+
+            const fillLight = new THREE.DirectionalLight(0xffcc99, 0.5);
+            fillLight.position.set(-2, 1, -3);
+            scene.add(fillLight);
+
+            // 5. Строим комнату (Материалы)
+            const woodMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b, roughness: 0.7 });
+            const lightWoodMat = new THREE.MeshStandardMaterial({ color: 0xdea87b, roughness: 0.6 });
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0x704a2a, roughness: 0.8 });
+            const metalMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.3, metalness: 0.6 });
+            
+            // Стены (Рейки - вертикальные бруски)
+            const createWallPanel = (x, z, yPos, width, height) => {
+                // Простая имитация реек - глубокая текстура
+                const mat = new THREE.MeshStandardMaterial({ color: 0xd9c5b0, roughness: 0.9 });
+                const wall = new THREE.Mesh(new THREE.BoxGeometry(width, height, 0.05), mat);
+                wall.position.set(x, yPos, z);
+                wall.receiveShadow = true;
+                scene.add(wall);
+                
+                // Добавляем рейки (деревянные полоски)
+                const railMat = new THREE.MeshStandardMaterial({ color: 0xbc9b7a, roughness: 0.7 });
+                for(let i = -width/2 + 0.2; i < width/2 - 0.1; i += 0.5) {
+                    const rail = new THREE.Mesh(new THREE.BoxGeometry(0.03, height, 0.1), railMat);
+                    rail.position.set(x + i, yPos, z + (z > 0 ? 0.05 : -0.05));
+                    scene.add(rail);
+                }
+            };
+
+            // Задняя стена
+            createWallPanel(0, -3, 1.5, 6, 3);
+            // Левая стена
+            createWallPanel(-3, 0, 1.5, 3, 3);
+            // Правая стена
+            createWallPanel(3, 0, 1.5, 3, 3);
+
+            // Пол (деревянный)
+            const floor = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), floorMat);
+            floor.rotation.x = -Math.PI / 2;
+            floor.position.y = -0.05;
+            floor.receiveShadow = true;
+            scene.add(floor);
+
+            // 6. Парта (Перед тобой)
+            const desk = new THREE.Group();
+            // Столешница
+            const top = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 0.6), lightWoodMat);
+            top.position.y = 0.75;
+            top.castShadow = true;
+            top.receiveShadow = true;
+            desk.add(top);
+            // Ножки
+            const legPos = [[-0.5, 0.2], [0.5, 0.2]];
+            legPos.forEach(pos => {
+                const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.75), metalMat);
+                leg.position.set(pos[0], 0.375, pos[1]);
+                leg.castShadow = true;
+                desk.add(leg);
+            });
+            desk.position.set(0, 0, 0.6); // Ставим прямо перед камерой
+            scene.add(desk);
+
+            // 7. Ноутбук на парте
+            const laptop = new THREE.Group();
+            // Основание
+            const baseMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.5 });
+            const base = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.02, 0.25), baseMat);
+            base.position.y = 0.78;
+            laptop.add(base);
+            
+            // Экран (повернут на 100 градусов, открыт)
+            const screenMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, emissive: 0x334455, emissiveIntensity: 0.1 });
+            const screen = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.2, 0.01), screenMat);
+            screen.position.set(0, 0.88, -0.1);
+            screen.rotation.x = -1.2; // Угол открытия
+            laptop.add(screen);
+            
+            laptop.position.set(0, 0, 0.7);
+            scene.add(laptop);
+
+            // 8. Классная доска (StudyBox)
+            const boardMat = new THREE.MeshStandardMaterial({ color: 0x0a1a2a });
+            const boardFrameMat = new THREE.MeshStandardMaterial({ color: 0x5c3a1e, roughness: 0.8 });
+            
+            const boardGroup = new THREE.Group();
+            const board = new THREE.Mesh(new THREE.BoxGeometry(2, 1.2, 0.05), boardMat);
+            board.position.set(0, 1.4, -2.9);
+            boardGroup.add(board);
+            
+            // Рамка
+            const frame = new THREE.Mesh(new THREE.BoxGeometry(2.1, 1.3, 0.1), boardFrameMat);
+            frame.position.set(0, 1.4, -2.9);
+            boardGroup.add(frame);
+            
+            // Текст на доске (нарисован простой геометрией - имитация логотипа)
+            const textMat = new THREE.MeshStandardMaterial({ color: 0x4db8ff, emissive: 0x4db8ff, emissiveIntensity: 0.5 });
+            const text1 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.15, 0.02), textMat);
+            text1.position.set(0, 1.6, -2.85);
+            boardGroup.add(text1);
+            
+            const text2 = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.05, 0.02), new THREE.MeshStandardMaterial({color: 0xffffff}));
+            text2.position.set(0, 1.3, -2.85);
+            boardGroup.add(text2);
+            
+            scene.add(boardGroup);
+
+            // 9. Дверь (Слева)
+            const doorMat = new THREE.MeshStandardMaterial({ color: 0x6b4423, roughness: 0.7 });
+            const doorHandleMat = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, metalness: 0.9, roughness: 0.2 });
+            
+            const door = new THREE.Mesh(new THREE.BoxGeometry(0.8, 2.2, 0.05), doorMat);
+            door.position.set(-2.9, 1.1, -1.5);
+            door.castShadow = true;
+            scene.add(door);
+            
+            const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.2), doorHandleMat);
+            handle.rotation.z = Math.PI / 2;
+            handle.position.set(-2.9, 1.2, -1.3);
+            scene.add(handle);
+            
+            // Плинтусы (простая полоска по полу)
+            const plinthMat = new THREE.MeshStandardMaterial({ color: 0x4a3018 });
+            const addPlinth = (x, z, w, h) => {
+                const p = new THREE.Mesh(new THREE.BoxGeometry(w, 0.1, h), plinthMat);
+                p.position.set(x, 0.05, z);
+                scene.add(p);
+            };
+            addPlinth(0, -2.95, 6, 0.05); // Зад
+            addPlinth(-2.95, 0, 0.05, 6); // Лево
+            addPlinth(2.95, 0, 0.05, 6); // Право
+
+            // 10. Обработка событий и цикл рендера
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update(); // Важно для гироскопа!
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+    </script>
+</body>
+</html>
